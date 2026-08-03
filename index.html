@@ -1611,6 +1611,15 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
   const fallenFoes = []; // names of foes felled, in order — the kill-beat source (A7)
   const recruited = []; // followers won mid-fight
   const log = [];
+  const rounds = []; // legibility trail: one structured record per resolved turn
+
+  function pcHp() {
+    const pc = combatants.find((c) => c.id === 'pc');
+    return pc ? pc.hp : null;
+  }
+  function actorMeta(c) {
+    return c ? { id: c.id, name: c.name, side: c.side } : null;
+  }
 
   // A `left` foe walked away (recruited or parleyed) — no longer in the fight.
   const living = (side) => combatants.filter((c) => c.side === side && c.alive && !c.left);
@@ -1661,9 +1670,11 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
   // subtract from the target. Damage reads the WEAPON only (character-design lock).
   function strike(attacker, target) {
     const [min, max] = attacker.weapon.dmg;
-    let raw = min + Math.floor(rng() * (max - min + 1));
+    const weaponRoll = min + Math.floor(rng() * (max - min + 1));
+    let raw = weaponRoll;
     // A SUBTERFUGE that EXPOSED this target opens it up for one harder blow (temporary).
-    if (target.exposed) { raw += 2; target.exposed = false; }
+    const exposed = target.exposed;
+    if (exposed) { raw += 2; target.exposed = false; }
     // Route through the defender's passive armor + any adaptive-defense stance. The
     // stance holds through the round (each incoming hit is checked against it) and is
     // cleared when the defender next acts.
@@ -1671,6 +1682,24 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
     const dmg = m.dmg;
     blowsLanded = true; // a blow is a blow, from either side — talk hardens now
     target.hp = Math.max(0, target.hp - dmg);
+    rounds.push({
+      round,
+      actor: actorMeta(attacker),
+      action: 'attack',
+      target: actorMeta(target),
+      weapon: attacker.weapon.name,
+      rolled: raw,
+      weaponRoll,
+      exposed: !!exposed,
+      flavor: m.flavor || null,
+      negated: m.negated,
+      damage: dmg,
+      absorbed: raw - dmg,
+      hpAfter: target.hp,
+      maxHp: target.maxHp,
+      pcHpAfter: pcHp(),
+      fell: !target.alive,
+    });
     if (m.negated) {
       log.push(`${target.name} slips ${attacker.name}'s ${attacker.weapon.name} (dodge)`);
     } else if (m.flavor && dmg < raw) {
@@ -1701,38 +1730,41 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
     const kind = effect.kind;
     if (kind === 'damage') {
       const target = living('foe')[0];
-      if (!target) return;
+      if (!target) return { kind: 'damage', target: null, damage: 0 };
       const dmg = Math.max(1, rollBand(effect.power, 2));
       blowsLanded = true;
       target.hp = Math.max(0, target.hp - dmg);
+      const fell = !target.alive;
       log.push(`${actor.name} looses ${sourceName} — ${target.name} takes ${dmg}`);
-      if (!target.alive) {
+      if (fell) {
         log.push(`✖ ${target.name} falls`);
         if (target.side === 'foe') { killedFoes++; fallenFoes.push(target.name); }
       }
-      return;
+      return { kind: 'damage', target: actorMeta(target), targetName: target.name, damage: dmg, hpAfter: target.hp, maxHp: target.maxHp, fell };
     }
     if (kind === 'heal') {
       const amt = rollBand(effect.power, 3);
       const before = actor.hp;
       actor.hp = Math.min(actor.maxHp, actor.hp + amt);
-      log.push(`${actor.name} draws on ${sourceName} — mends ${actor.hp - before}`);
-      return;
+      const healed = actor.hp - before;
+      log.push(`${actor.name} draws on ${sourceName} — mends ${healed}`);
+      return { kind: 'heal', amount: healed, hpAfter: actor.hp, maxHp: actor.maxHp };
     }
     if (kind === 'shield') {
       const amt = Math.max(1, rollBand(effect.power, 2));
       actor.stance = { flavor: 'absorb', shield: amt }; // a ward: an absorb brace this size
       log.push(`${actor.name} raises ${sourceName} — a ward (${amt})`);
-      return;
+      return { kind: 'shield', amount: amt, flavor: 'absorb' };
     }
     if (kind === 'status') {
       // H1: apply a timed status (WARDED end-to-end). Refresh if already present.
       const spec = effect.status || { id: 'WARDED', polarity: 'good', duration: 3, amount: effect.amount ?? effect.power ?? 2 };
       applyStatus(actor, spec);
       log.push(`${actor.name} takes on ${sourceName} — ${String(spec.id || 'a mark').toLowerCase()}`);
-      return;
+      return { kind: 'status', status: spec.id, amount: spec.amount ?? effect.amount ?? effect.power ?? 2 };
     }
     log.push(`${actor.name} invokes ${sourceName}`); // edge / unknown — flavored no-op here
+    return { kind: 'unknown' };
   }
 
   // Foe AI (directive §2: "enemy behavior worth reading"). Per-being behaviors from the
@@ -1746,7 +1778,12 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
   //   steady     : the plain default — a seeded target
   function foeTurn(foe) {
     // A successful SUBTERFUGE throws a foe off its next turn (temporary edge).
-    if (foe.skipNext) { foe.skipNext = false; log.push(`${foe.name} shakes off the distraction`); return; }
+    if (foe.skipNext) {
+      foe.skipNext = false;
+      log.push(`${foe.name} shakes off the distraction`);
+      rounds.push({ round, actor: actorMeta(foe), action: 'recover', target: null, pcHpAfter: pcHp() });
+      return;
+    }
     const party = living('party');
     if (!party.length) return;
     const behavior = (foe.ref && foe.ref.behavior) || 'steady';
@@ -1761,13 +1798,25 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
       return party[party.length - 1];
     };
 
-    if (behavior === 'cowardly' && foe.hp <= Math.ceil(foe.maxHp * 0.35) && rng() < 0.5) {
-      foe.left = true; // it loses its nerve and quits the field
-      log.push(`${foe.name} loses its nerve and bolts`);
-      return;
+    if (behavior === 'cowardly' && foe.hp <= Math.ceil(foe.maxHp * 0.35)) {
+      const cowardRoll = rng();
+      if (cowardRoll < 0.5) {
+        foe.left = true; // it loses its nerve and quits the field
+        log.push(`${foe.name} loses its nerve and bolts`);
+        rounds.push({
+          round, actor: actorMeta(foe), action: 'flee', target: null,
+          chance: 0.5, roll: +cowardRoll.toFixed(5), success: true, pcHpAfter: pcHp(),
+        });
+        return;
+      }
     }
     if (behavior === 'caster') {
-      if (!foe.channeling) { foe.channeling = true; log.push(`${foe.name} gathers a rite`); return; }
+      if (!foe.channeling) {
+        foe.channeling = true;
+        log.push(`${foe.name} gathers a rite`);
+        rounds.push({ round, actor: actorMeta(foe), action: 'gather', target: null, pcHpAfter: pcHp() });
+        return;
+      }
       foe.channeling = false;
       const t = pickTarget();
       log.push(`${foe.name} looses the rite`);
@@ -1781,6 +1830,9 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
         // coordinate: keep hitting the shared marked target while it lives
         if (!packTarget || !packTarget.alive || packTarget.left) packTarget = weakest();
         log.push(`${foe.name} joins the pack on ${packTarget.name}`);
+        rounds.push({
+          round, actor: actorMeta(foe), action: 'pack', target: actorMeta(packTarget), pcHpAfter: pcHp(),
+        });
         strike(foe, packTarget);
         return;
       }
@@ -1835,6 +1887,10 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
       const flavor = defenseFlavorFor(lead && lead.ref, pcArmor);
       actor.stance = { flavor };
       log.push(`${actor.name} braces (${flavor})`);
+      rounds.push({
+        round, actor: actorMeta(actor), action: 'defend', target: actorMeta(lead),
+        flavor, pcHpAfter: pcHp(),
+      });
       return resolve('defend');
     }
     if (type === 'item') {
@@ -1849,9 +1905,17 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
       const gate = gnosisGate(item);
       if (gate && pc && rankIndex(pc.rank('gnosis')) < rankIndex(gate)) {
         log.push(`${actor.name} fumbles ${item.name} — the rite slips its gnosis`);
+        rounds.push({
+          round, actor: actorMeta(actor), action: 'item-fumble', target: null,
+          item: item.name, pcHpAfter: pcHp(),
+        });
         return resolve('item-fumble'); // arcane item survives; the turn does not
       }
-      applyEffect(actor, effect, item.name);
+      const effectRes = applyEffect(actor, effect, item.name);
+      rounds.push({
+        round, actor: actorMeta(actor), action: 'item', target: effectRes && effectRes.target,
+        item: item.name, effect: effectRes, pcHpAfter: pcHp(),
+      });
       const res = resolve('item');
       // A finite-charge consumable is spent; a reusable item (charges null) is not.
       res.consumed = item.uid ? { uid: item.uid, spent: item.charges != null } : null;
@@ -1870,15 +1934,25 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
       const chance = typeof ctx.chance === 'number' ? ctx.chance : 0.5;
       const label = ctx.label || 'works the ground for an opening';
       const foe = living('foe')[0];
-      if (rng() < chance && foe) {
+      const subRoll = rng();
+      const success = subRoll < chance && !!foe;
+      if (success) {
         const kind = ctx.kind === 'expose' ? 'expose' : 'distract';
         if (kind === 'distract') { foe.skipNext = true; log.push(`${actor.name} ${label} — ${foe.name} is thrown off`); }
         else { foe.exposed = true; log.push(`${actor.name} ${label} — ${foe.name} is left exposed`); }
+        rounds.push({
+          round, actor: actorMeta(actor), action: 'subterfuge', target: actorMeta(foe),
+          chance, roll: +subRoll.toFixed(5), success, kind, label, pcHpAfter: pcHp(),
+        });
         const res = resolve('subterfuge');
         res.subterfuge = { ok: true, kind };
         return res;
       }
       log.push(`${actor.name} ${label} — but the moment passes`);
+      rounds.push({
+        round, actor: actorMeta(actor), action: 'subterfuge', target: actorMeta(foe),
+        chance, roll: +subRoll.toFixed(5), success, label, pcHpAfter: pcHp(),
+      });
       const res = resolve('subterfuge-fail');
       res.subterfuge = { ok: false };
       return res;
@@ -1886,7 +1960,13 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
     if (type === 'flee') {
       // Seeded escape. Combat flee is the riskier layer (two-layer verb model): easier
       // to back away at contact than to break off once blows are landing.
-      const got = rng() < (blowsLanded ? 0.35 : 0.5);
+      const chance = blowsLanded ? 0.35 : 0.5;
+      const fleeRoll = rng();
+      const got = fleeRoll < chance;
+      rounds.push({
+        round, actor: actorMeta(actor), action: 'flee', target: null,
+        chance, roll: +fleeRoll.toFixed(5), success: got, pcHpAfter: pcHp(),
+      });
       if (got) {
         outcome = 'fled';
         log.push(`${actor.name} breaks away`);
@@ -1920,9 +2000,14 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
       }
       // The approach lands: the foe leaves the fight (recruited or stood down).
       foe.left = true;
-      if (res.outcome === 'recruit') { recruited.push(res.follower); log.push(voice('recruit', foe, action.verb, `${foe.name} joins you (${action.verb})`)); }
+      const talkOutcome = res.outcome === 'recruit' ? 'recruit' : 'parley';
+      if (talkOutcome === 'recruit') { recruited.push(res.follower); log.push(voice('recruit', foe, action.verb, `${foe.name} joins you (${action.verb})`)); }
       else log.push(voice('parley', foe, action.verb, `${foe.name} stands down (${action.verb})`));
-      return resolve(res.outcome === 'recruit' ? 'recruit' : 'parley');
+      rounds.push({
+        round, actor: actorMeta(actor), action: 'talk', target: actorMeta(foe),
+        verb: action.verb, outcome: talkOutcome, pcHpAfter: pcHp(),
+      });
+      return resolve(talkOutcome);
     }
     return { ok: false, outcome, event: 'unknown-action' };
   }
@@ -1949,6 +2034,7 @@ function createCombat({ party = [], foes = [], seed = 0, pc = null, roster = nul
     get over() { return outcome != null; },
     get round() { return round; },
     get log() { return log; },
+    get rounds() { return rounds.slice(); },
     get recruited() { return recruited.slice(); },
     get fallenFoes() { return fallenFoes.slice(); }, // names of foes felled, in order (A7 kill beat)
     get engaged() { return blowsLanded; }, // blows have landed → in-combat talk hardened
@@ -1998,7 +2084,67 @@ function shuffle(arr, rng) {
   return a;
 }
 
-return { createCombatant, wardAmount, normalizeWeapon, defenseFlavorFor, mitigate, createCombat, DEFENSE_FLAVORS };
+// cp-018: turn one structured combat round into a terse legibility line for the
+// event-log record. `pcMaxHp` is the player character's maximum hp at draw time.
+const stripSeedMark = (s) => String(s || '').replace(/^\[SEED\]\s*/gi, '');
+function formatCombatRound(r, pcMaxHp) {
+  const actor = stripSeedMark(r.actor && r.actor.name) || 'someone';
+  const you = `you ${r.pcHpAfter != null ? r.pcHpAfter : '?'}/${pcMaxHp != null ? pcMaxHp : '?'}`;
+  const pct = (n) => `${Math.round(n * 100)}%`;
+  const targetName = (t) => stripSeedMark((t && t.name) || 'it');
+  switch (r.action) {
+    case 'attack': {
+      const t = targetName(r.target);
+      const weapon = stripSeedMark(r.weapon || 'strike');
+      let s = `Round ${r.round} - ${actor} strikes ${t}: rolled ${r.rolled} (${weapon})`;
+      if (r.exposed) s += ` +2`;
+      s += `, dealt ${r.damage}`;
+      if (r.negated) s += ` (dodged)`;
+      else if (r.flavor && r.absorbed) s += ` (${r.flavor} ${r.absorbed})`;
+      s += `, ${you}`;
+      if (r.fell) s += `; ${t} falls`;
+      return s;
+    }
+    case 'flee':
+      return `Round ${r.round} - ${actor} tries to flee: odds ${pct(r.chance)}, roll ${r.roll.toFixed(2)}, ${r.success ? 'escaped' : 'failed'}, ${you}`;
+    case 'defend':
+      return `Round ${r.round} - ${actor} braces (${r.flavor || 'guard'}), ${you}`;
+    case 'item': {
+      const e = r.effect || {};
+      let s = `Round ${r.round} - ${actor} uses ${stripSeedMark(r.item || 'something')}`;
+      if (e.kind === 'damage') s += `: hits ${targetName(e.target)} for ${e.damage}, ${you}`;
+      else if (e.kind === 'heal') s += `: mends ${e.amount}, ${you}`;
+      else if (e.kind === 'shield') s += `: ward ${e.amount}, ${you}`;
+      else if (e.kind === 'status') s += `: ${String(e.status || 'mark').toLowerCase()} ${e.amount}, ${you}`;
+      else s += `, ${you}`;
+      return s;
+    }
+    case 'item-fumble':
+      return `Round ${r.round} - ${actor} fumbles ${stripSeedMark(r.item || 'something')}, ${you}`;
+    case 'subterfuge': {
+      const t = targetName(r.target);
+      let s = `Round ${r.round} - ${actor} gambit: odds ${pct(r.chance)}, roll ${r.roll.toFixed(2)}, ${r.success ? 'hit' : 'miss'}`;
+      if (r.success) s += ` (${r.kind})`;
+      s += `, ${you}`;
+      return s;
+    }
+    case 'talk': {
+      const t = targetName(r.target);
+      const verb = stripSeedMark(r.verb || 'words');
+      return `Round ${r.round} - ${actor} parleys (${verb}): ${t} ${r.outcome === 'recruit' ? 'joins you' : 'stands down'}, ${you}`;
+    }
+    case 'gather':
+      return `Round ${r.round} - ${actor} gathers a rite, ${you}`;
+    case 'pack':
+      return `Round ${r.round} - ${actor} joins the pack on ${targetName(r.target)}, ${you}`;
+    case 'recover':
+      return `Round ${r.round} - ${actor} shakes off the distraction, ${you}`;
+    default:
+      return `Round ${r.round} - ${actor} acts, ${you}`;
+  }
+}
+
+return { createCombatant, wardAmount, normalizeWeapon, defenseFlavorFor, mitigate, createCombat, formatCombatRound, DEFENSE_FLAVORS };
 })();
 
 __M["src/engine/bestiary.js"] = (function () {
@@ -4386,7 +4532,17 @@ function createEventLog({ cap = EVENTLOG_CAP } = {}) {
   }
   function clear() { ring = []; }
 
-  return { log, entries, recent, serialize, restore, clear, get size() { return ring.length; }, get cap() { return CAP; } };
+  // Plain-text export for the record overlay's copy-to-clipboard affordance.
+  function toText(opts = {}) {
+    const lines = [];
+    for (const e of ring) {
+      const tickStr = opts.tick !== false ? `tick ${e.tick} · ` : '';
+      lines.push(`${tickStr}${e.kind}: ${e.outcome}`);
+    }
+    return lines.join('\n');
+  }
+
+  return { log, entries, recent, serialize, restore, clear, toText, get size() { return ring.length; }, get cap() { return CAP; } };
 }
 
 return { createEventLog, EVENTLOG_CAP };
@@ -6826,6 +6982,8 @@ function buildDeathDrawList({
   fallen = '—',
   pc = {},
   lineage = [],
+  recap = [],
+  killingBlow = '',
   width = 416,
   height = 416,
 } = {}) {
@@ -6839,10 +6997,20 @@ function buildDeathDrawList({
   L.define('name', { lines: 1, lineHeight: 26, size: 16 });
   L.define('omen', { lines: 2, lineHeight: 17, size: 12 });
   L.define('carries', { lines: 2, lineHeight: 17, size: 12 });
+  // cp-018: final-fight recap (only when deathInfo carries one). Shown below the
+  // bust, so it uses the full card width and is capped to avoid clipping lineage.
+  const hasRecap = recap.length > 0 && killingBlow;
+  let recapBody = [];
+  if (hasRecap) {
+    recapBody = [...recap.slice(-2), `killing blow - ${killingBlow}`]
+      .flatMap((s) => wrapToWidth(stripSeed(s), colW2, 12));
+    if (recapBody.length > 3) recapBody = recapBody.slice(recapBody.length - 3);
+    L.define('recap', { lines: 1 + recapBody.length, lineHeight: 14, size: 12 });
+  }
   // C3: the lineage roll — the world remembers who came before (below the bust, so it
   // uses the full width). Newest first; each line names days survived, killer, deeds.
   L.define('rollhead', { lines: 1, lineHeight: 20, size: 12 });
-  L.define('roll', { lines: 5, lineHeight: 16, size: 11 });
+  L.define('roll', { lines: 3, lineHeight: 16, size: 11 });
 
   const name = stripSeed(pc.name) || '—';
   const omen = pc.omen ? stripSeed(pc.omen) : '—';
@@ -6857,9 +7025,13 @@ function buildDeathDrawList({
   L.push('name', name, { color: 'hue', size: 16, maxWidth: colW });
   L.push('omen', `omen — ${omen}`, { color: 'faint', size: 12, maxWidth: colW });
   L.push('carries', `carries — ${odd}`, { color: 'faint', size: 12, maxWidth: colW });
+  if (hasRecap) {
+    L.push('recap', '— the final pattern —', { color: 'dim', size: 12, maxWidth: colW2 });
+    for (const line of recapBody) L.push('recap', line, { color: 'faint', size: 12, maxWidth: colW2 });
+  }
   if (lineage && lineage.length) {
     L.push('rollhead', '— those the world remembers —', { color: 'dim', size: 12, maxWidth: colW2 });
-    for (const e of lineage.slice(-5).reverse()) {
+    for (const e of lineage.slice(-3).reverse()) {
       const d = e.deeds || {};
       const deeds = `${d.gatesOpened || 0}g ${d.clears || 0}c ${d.followersLost || 0}†`;
       L.push('roll', `${stripSeed(e.name)} · ${e.days | 0}d · ${stripSeed(e.killer || '?')} · ${deeds}`, { color: 'faint', size: 11, maxWidth: colW2 });
@@ -7197,6 +7369,7 @@ const { createLoot } = __M["src/engine/loot.js"];
 const { createEventLog } = __M["src/engine/eventlog.js"];
 const { createSocial } = __M["src/engine/social.js"];
 const { createCombatProse } = __M["src/engine/combatprose.js"];
+const { formatCombatRound } = __M["src/engine/combat.js"];
 const { subterfugeContext } = __M["src/engine/tactics.js"];
 const { normalizeItem, combatEffect } = __M["src/engine/items.js"];
 const { createAudio } = __M["src/engine/audio.js"];
@@ -8101,8 +8274,21 @@ function boot() {
     }
     y = CANVAS_H - 28;
     ctx.fillStyle = shadeColor(4); ctx.font = '12px monospace';
-    ctx.fillText('[W]/[S] scroll   [D] dump json   [`]/[Esc] close', 28, y);
+    ctx.fillText('[W]/[S] scroll   [C] copy   [D] dump json   [`]/[Esc] close', 28, y);
     ctx.restore();
+  }
+  // cp-018: copy the chronicle to the clipboard as plain text; falls back to a toast.
+  function copyEventLog() {
+    const text = events.toText();
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(text);
+        toast = 'record copied';
+      } else {
+        toast = `record: ${events.size} lines`;
+      }
+    } catch (_) { toast = 'the record would not copy'; }
+    return text;
   }
   // B3: serialize the full buffer (WITH seeds/tick — the diagnostic detail) to JSON.
   // In a browser this triggers a download; headless it just toasts the count. Never throws.
@@ -8239,11 +8425,13 @@ function boot() {
     combatReturn = origin;
     combatSeedUsed = cseed;
     combat = session.startCombat(enc, cseed, { narrate: combatNarrate, targeting: combatRegister.targeting });
+    combatRoundsLogged = 0; // cp-018: fresh fight, fresh round log
     const foeNames = (enc.foes || []).map((f) => stripSeed(f.name || f.beingId || 'a foe')).join(', ');
     logEvent('encounter', { mode: origin, seed: cseed, outcome: `${enc.unfair ? 'unfair ' : ''}fight vs ${foeNames || 'foes'}` });
     combatMenu = 'root'; approaches = []; combatItems = []; combatNote = '';
     audio.sfx('encounter');
     autoFoeTurns();
+    logCombatRounds(); // cp-018: record any opening foe turns
     mode = 'combat';
   }
 
@@ -8269,7 +8457,9 @@ function boot() {
     while (!combat.over && combat.active() && combat.active().side === 'foe' && g++ < 200) combat.take();
   }
   function afterPlayerAction() {
+    logCombatRounds(); // cp-018: record the player's round and any foe rounds before resolving
     if (!combat.over) autoFoeTurns();
+    logCombatRounds(); // cp-018: record any trailing foe turns
     if (combat.over) endCombat();
     render();
   }
@@ -8388,6 +8578,21 @@ function boot() {
     for (let i = 0; i < String(s).length; i++) { h ^= String(s).charCodeAt(i); h = Math.imul(h, 16777619); }
     return h >>> 0;
   }
+  // cp-018: format one structured combat round for the event-log record.
+  function combatRoundLine(r) {
+    const pcCombatant = combat && combat.combatants && combat.combatants.find((c) => c.id === 'pc');
+    const pcMax = pcCombatant ? pcCombatant.maxHp : session.pc.maxHp;
+    return formatCombatRound(r, pcMax);
+  }
+  // cp-018: after any combat.take(), flush any new round records to the event log.
+  let combatRoundsLogged = 0;
+  function logCombatRounds() {
+    if (!combat) return;
+    while (combatRoundsLogged < combat.rounds.length) {
+      const r = combat.rounds[combatRoundsLogged++];
+      logEvent('combat-round', { mode: combatReturn, seed: combatSeedUsed, outcome: combatRoundLine(r) });
+    }
+  }
   function endCombat() {
     const fallen = session.pc.name;
     const fallenPortrait = session.pc.portrait; // capture the dying face before permadeath rolls a fresh stranger
@@ -8421,8 +8626,19 @@ function boot() {
     if (rec && rec.length) line += ` · ${rec.map((f) => f.name).join(', ')} joins you`;
     // Part B: record the resolved fight (outcome + felled/found/joined summary).
     logEvent('combat', { mode: combatReturn, seed: combatSeedUsed, outcome: `${summary.outcome} — ${stripSeed(line)}`.trim() });
+    // cp-018: capture the final fight's last rounds + the killing blow for the death recap.
+    let deathRecap = null;
+    if (summary.pcDied && combat) {
+      const recap = combat.rounds.slice(-4).map((r) => combatRoundLine(r));
+      const reversed = combat.rounds.slice().reverse();
+      const killingRound = reversed.find((r) => r.actor && r.actor.side === 'foe' && r.pcHpAfter === 0)
+        || reversed.find((r) => r.actor && r.actor.side === 'foe')
+        || combat.rounds[combat.rounds.length - 1];
+      const killingBlow = killingRound ? combatRoundLine(killingRound) : 'the killing blow is lost to the record';
+      deathRecap = { recap, killingBlow };
+    }
     combat = null;
-    if (summary.pcDied) { logEvent('death', { mode: combatReturn, outcome: `${stripSeed(fallen)} fell` }); refreshCapacity(); deathInfo = { fallen, portrait: fallenPortrait }; audio.sfx('death'); mode = 'death'; }
+    if (summary.pcDied) { logEvent('death', { mode: combatReturn, outcome: `${stripSeed(fallen)} fell` }); refreshCapacity(); deathInfo = { fallen, portrait: fallenPortrait, ...deathRecap }; audio.sfx('death'); mode = 'death'; }
     else if (combatReturn === 'overworld') { owNote = line; mode = 'overworld'; }
     else { encLine = line; mode = 'dungeon'; }
   }
@@ -8735,7 +8951,13 @@ function boot() {
   function renderDeath() {
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     { const b = bustBoxFor('death'); drawBust(deathInfo.portrait || 'HERO', b.x, b.y, b.size); }
-    paintRows(buildDeathDrawList({ fallen: deathInfo.fallen, pc: session.pc, lineage: session.lineage() }));
+    paintRows(buildDeathDrawList({
+      fallen: deathInfo.fallen,
+      pc: session.pc,
+      lineage: session.lineage(),
+      recap: deathInfo.recap || [],
+      killingBlow: deathInfo.killingBlow || '',
+    }));
     sceneStatus = `deaths: ${session.deaths} · cleared: ${session.clearedSites().length}`;
     status.textContent = stripSeed(sceneStatus);
   }
@@ -8899,7 +9121,7 @@ function boot() {
       render(); return;
     }
     // The record ([`]) — B2 event-log overlay; opens from any nav mode, captures input
-    // while open. [W]/[S] scroll, [D] dumps the JSON (B3), [`]/[Esc] closes.
+    // while open. [W]/[S] scroll, [C] copies plain text, [D] dumps the JSON (B3), [`]/[Esc] closes.
     if (a === 'eventlog' && (mode === 'overworld' || mode === 'city' || mode === 'dungeon' || showLog)) {
       e.preventDefault(); showLog = !showLog; logScroll = 0; render(); return;
     }
@@ -8909,6 +9131,7 @@ function boot() {
       if (a === 'cancel' || a === 'eventlog') { showLog = false; }
       else if (d === 'N') logScroll = Math.min(Math.max(0, events.size - 1), logScroll + 1); // older
       else if (d === 'S') logScroll = Math.max(0, logScroll - 1); // newer
+      else if (e.key === 'c' || e.key === 'C') copyEventLog();
       else if (e.key === 'd' || e.key === 'D') dumpEventLog();
       render(); return;
     }
