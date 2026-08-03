@@ -6234,6 +6234,7 @@ const SHARED = {
 const PER_MODE = {
   overworld: { r: 'rest', R: 'rest', k: 'save', K: 'save', l: 'load', L: 'load' },
   title: { l: 'load', L: 'load' },
+  dungeon: { n: 'map', N: 'map' },
   creation: { r: 'reroll', R: 'reroll' },
   // M11 tactical combat: the four verbs + parley + flee. Keys avoid WASD/arrows (the
   // movement set stays movement-only, no shadowing) and the shared cluster; each verb's
@@ -6281,7 +6282,7 @@ const MODE_HINTS = {
   title: [['Space', 'begin'], ['L', 'continue']],
   creation: [['Space', 'accept'], ['R', 'deal again'], ['Esc', 'back']],
   overworld: [['WASD', 'walk'], ['E', 'enter'], ['Q', 'journal'], ['R', 'rest'], ['K', 'save'], ['L', 'load']],
-  dungeon: [['W/S', 'move'], ['A/D', 'turn'], ['Q', 'journal'], ['Esc', 'leave']],
+  dungeon: [['W/S', 'move'], ['A/D', 'turn'], ['N', 'map'], ['Q', 'journal'], ['Esc', 'leave']],
   city: [['WASD', 'walk'], ['E', 'enter'], ['Q', 'journal'], ['Esc', 'leave']],
   journal: [['N', 'new note'], ['W/S', 'select'], ['E', 'revise'], ['Q', 'close']],
   building: [['Space', 'back']],
@@ -6530,7 +6531,7 @@ function buildNatureDrawList({ width = CANVAS_W, height = CANVAS_H, reference = 
   const colW = width - 44;
   const nat = natureLines();
   L.define('title', { lines: 1, lineHeight: 30, size: 20 });
-  L.define('lead', { lines: 2, lineHeight: 20, size: 13 });
+  L.define('lead', { lines: 3, lineHeight: 20, size: 13 });
   L.define('gates', { lines: nat.gates.length + 1, lineHeight: 22, size: 14 });
   L.define('ranks', { lines: 3, lineHeight: 19, size: 12 });
   L.define('close', { lines: 1, lineHeight: 20, size: 12 });
@@ -6545,6 +6546,145 @@ function buildNatureDrawList({ width = CANVAS_W, height = CANVAS_H, reference = 
 }
 
 return { natureLines, chip, packChips, buildKeybar, buildHudBar, hudBarHeight, buildPanel, keybarHeight, buildHelpOverlay, buildNatureDrawList, MODE_HINTS, GLOBAL_HINTS };
+})();
+
+__M["src/engine/minimap.js"] = (function () {
+
+// First-person dungeon minimap (cp-017).
+//
+// Drives the map from the REAL explored/visited state the crawl tracks: a Set of
+// fine-tile coordinates that have been seen. No parallel truth, no second grid.
+// Rendering is deliberately primitive — small square cells, a single-hue player
+// arrow, an exit glyph — so it reads as part of the same 1980s monochrome machine.
+
+function minimapKey(x, y) { return `${x},${y}`; }
+
+/**
+ * Create a minimap state object. `markAround` reveals floor tiles in a small
+ * radius around a point (the crawl's current tile), which is enough to show the
+ * corridor shape as the party moves without cheating walls into view.
+ */
+function createMinimap() {
+  const explored = new Set();
+  return {
+    mark(x, y) { explored.add(minimapKey(x, y)); },
+    markAround(dungeon, cx, cy, radius = 1) {
+      for (let dy = -radius; dy <= radius; dy++) {
+        for (let dx = -radius; dx <= radius; dx++) {
+          const x = cx + dx, y = cy + dy;
+          if (dungeon.floorAt(x, y)) explored.add(minimapKey(x, y));
+        }
+      }
+    },
+    isExplored(x, y) { return explored.has(minimapKey(x, y)); },
+    get explored() { return explored; },
+  };
+}
+
+/** Convenience: reveal the crawl's current tile and its immediate floor neighbours. */
+function exploreCurrent(run) {
+  run.minimap.markAround(run.dungeon, run.crawl.x, run.crawl.y);
+}
+
+/** Arrow polygon for the four cardinal facings, centred at (cx,cy) with radius r. */
+function facingArrow(facing, cx, cy, r) {
+  switch (facing) {
+    case 'N': return [[cx, cy - r], [cx + r, cy + r], [cx - r, cy + r]];
+    case 'S': return [[cx, cy + r], [cx + r, cy - r], [cx - r, cy - r]];
+    case 'E': return [[cx + r, cy], [cx - r, cy + r], [cx - r, cy - r]];
+    case 'W': return [[cx - r, cy], [cx + r, cy + r], [cx + r, cy - r]];
+    default: return [[cx, cy]];
+  }
+}
+
+/**
+ * Build the logical contents of the minimap for the current frame.
+ * Headless-testable: it maps the explored Set to drawn cells and reports the
+ * player marker / exit marker state without touching a canvas.
+ */
+function gatherMinimap(dungeon, minimap, crawl) {
+  const floors = [];
+  const walls = [];
+  for (let y = 0; y < dungeon.height; y++) {
+    for (let x = 0; x < dungeon.width; x++) {
+      if (!minimap.isExplored(x, y)) continue;
+      if (dungeon.floorAt(x, y)) floors.push({ x, y });
+      else walls.push({ x, y });
+    }
+  }
+  const exit = {
+    x: dungeon.entrance.x,
+    y: dungeon.entrance.y,
+    seen: minimap.isExplored(dungeon.entrance.x, dungeon.entrance.y),
+  };
+  return {
+    width: dungeon.width,
+    height: dungeon.height,
+    floors,
+    walls,
+    exit,
+    player: { x: crawl.x, y: crawl.y, facing: crawl.facing },
+  };
+}
+
+/**
+ * Draw the minimap into the scene viewport. The map is a small square-pixeled
+ * inset in the current monochrome palette; unexplored tiles stay dark (fog).
+ */
+function drawMinimap(ctx, {
+  dungeon, crawl, minimap, shadeColor,
+  x, y, maxSize = 120,
+}) {
+  const data = gatherMinimap(dungeon, minimap, crawl);
+  const scale = Math.max(2, Math.min(maxSize / data.width, maxSize / data.height) | 0);
+  const mw = data.width * scale;
+  const mh = data.height * scale;
+
+  ctx.save();
+  ctx.globalAlpha = 0.85;
+  ctx.fillStyle = shadeColor(0);
+  ctx.fillRect(x, y, mw + 2, mh + 2);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = shadeColor(2);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x, y, mw + 2, mh + 2);
+
+  // Explored floor cells.
+  ctx.fillStyle = shadeColor(2);
+  for (const f of data.floors) {
+    ctx.fillRect(x + 1 + f.x * scale, y + 1 + f.y * scale, scale, scale);
+  }
+
+  // Exit marker — a small cross, only once the exit tile has been explored.
+  if (data.exit.seen) {
+    const ex = x + 1 + data.exit.x * scale + scale / 2;
+    const ey = y + 1 + data.exit.y * scale + scale / 2;
+    const m = Math.max(2, scale * 0.35);
+    ctx.strokeStyle = shadeColor(6);
+    ctx.lineWidth = Math.max(1, scale / 4);
+    ctx.beginPath();
+    ctx.moveTo(ex - m, ey - m); ctx.lineTo(ex + m, ey + m);
+    ctx.moveTo(ex + m, ey - m); ctx.lineTo(ex - m, ey + m);
+    ctx.stroke();
+  }
+
+  // Player position + facing arrow.
+  const px = x + 1 + data.player.x * scale + scale / 2;
+  const py = y + 1 + data.player.y * scale + scale / 2;
+  const r = Math.max(2, scale / 2);
+  ctx.fillStyle = shadeColor(6);
+  ctx.beginPath();
+  const pts = facingArrow(data.player.facing, px, py, r);
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+  return { width: mw + 2, height: mh + 2 };
+}
+
+return { minimapKey, createMinimap, exploreCurrent, facingArrow, gatherMinimap, drawMinimap };
 })();
 
 __M["src/engine/panels.js"] = (function () {
@@ -7075,6 +7215,7 @@ const { renderFP } = __M["src/engine/fprender.js"];
 const { CANVAS_W, CANVAS_H, buildTitleDrawList, buildCreationDrawList, stripSeed, bustBoxFor } = __M["src/engine/layout.js"];
 const { buildKeybar, buildHelpOverlay, buildPanel, buildNatureDrawList } = __M["src/engine/chrome.js"];
 const { computeFrame, frameDisplay } = __M["src/engine/frame.js"];
+const { createMinimap, exploreCurrent, drawMinimap } = __M["src/engine/minimap.js"];
 const { textWidth, ellipsize } = __M["src/engine/layout.js"];
 const { buildCombatDrawList, buildDeathDrawList, buildBuildingDrawList, buildJournalDrawList, buildSneakDrawList, buildPartyDrawList } = __M["src/engine/panels.js"];
 const { createJournal } = __M["src/engine/journal.js"];
@@ -7350,7 +7491,14 @@ function createGame(config = master) {
     const life = createDungeonLife(dungeon, { bestiary, seed: (dseed ^ 0x11fe) >>> 0, max: isChapel(site) ? 4 : 3 });
     // Visual register (M5): stable per dungeon so a site always looks the same.
     // chapel: the pinned landmark → full-collision prose throughout the crawl.
-    return { site, dungeon, crawl, name, table, steps: 0, life, register: styleFor(dseed), chapel: isChapel(site) };
+    const minimap = createMinimap();
+    minimap.markAround(dungeon, crawl.x, crawl.y);
+    return { site, dungeon, crawl, name, table, steps: 0, life, register: styleFor(dseed), chapel: isChapel(site), minimap };
+  }
+
+  /** Reveal the current crawl tile on the run's minimap. Called after every move/turn. */
+  function refreshMinimap() {
+    if (run && run.minimap) exploreCurrent(run);
   }
 
   // Choose an encounter table for a site. Falls back to 'dungeon' when the site's
@@ -7492,6 +7640,7 @@ function boot() {
   let showParty = false; // [Y] party-management surface (D3), any nav mode
   let partySel = 0;
   let showNature = false; // C4: the one-time "the stranger's nature" explainer overlay
+  let showMinimap = false; // cp-017: first-person dungeon minimap toggle
   const NATURE_KEY = 'chp-nature-seen';
   function natureSeen() { try { return !!(typeof localStorage !== 'undefined' && localStorage.getItem(NATURE_KEY)); } catch (_) { return false; } }
   function markNatureSeen() { try { if (typeof localStorage !== 'undefined') localStorage.setItem(NATURE_KEY, '1'); } catch (_) { /* ignore */ } }
@@ -8404,6 +8553,13 @@ function boot() {
       const size = Math.round(Math.min(s.h * 0.42, s.w * 0.3, 150));
       drawBust(bustArtId(ahead.beingId), Math.round(s.w / 2 - size / 2), Math.round(s.h * 0.24), size);
     }
+    // cp-017: toggleable first-person minimap, drawn from the real explored set.
+    if (showMinimap) {
+      drawMinimap(ctx, {
+        dungeon: run.dungeon, crawl: run.crawl, minimap: run.minimap, shadeColor,
+        x: s.x + 12, y: s.y + 12, maxSize: 120,
+      });
+    }
     const enc = encLine ? `  ${encLine}` : '';
     const seen = ahead ? `  · ${stripSeed(ahead.name)} ahead` : '';
     sceneStatus = `${describeRoom(run)} — ${register.prompt_exit_site}${enc}${seen}`;
@@ -8653,7 +8809,7 @@ function boot() {
     if (showHelp) paintHelp();
   }
 
-  function toOverworld() { mode = 'overworld'; run = null; city = null; building = null; }
+  function toOverworld() { mode = 'overworld'; run = null; city = null; building = null; showMinimap = false; }
 
   // Load the saved run (shared by title's [L] continue and overworld's [L]).
   function loadSave() {
@@ -8866,7 +9022,9 @@ function boot() {
       }
       if (a === 'cancel') { // back away one step, out of its cell
         dungeonEnemy = null;
-        if (run.crawl.back().exited) { toOverworld(); }
+        const res = run.crawl.back();
+        refreshMinimap();
+        if (res.exited) { toOverworld(); }
         else mode = 'dungeon';
         render(); return;
       }
@@ -8998,17 +9156,17 @@ function boot() {
       render();
       return;
     }
-    // dungeon crawl: W/S forward-back, A/D turn, Esc leaves (bindings map WASD to
-    // directions; the crawl reads them as move/turn).
+    // dungeon crawl: W/S forward-back, A/D turn, N toggles minimap, Esc leaves.
     e.preventDefault();
+    if (a === 'map') { showMinimap = !showMinimap; render(); return; }
     if (a === 'cancel') { toOverworld(); render(); return; }
     const dir = dirFor(e.key);
     if (!dir) return;
     let stepped = false;
-    if (dir === 'N') { if (run.crawl.forward().exited) { toOverworld(); render(); return; } stepped = true; }
-    else if (dir === 'S') { if (run.crawl.back().exited) { toOverworld(); render(); return; } stepped = true; }
-    else if (dir === 'W') run.crawl.turnLeft();
-    else if (dir === 'E') run.crawl.turnRight();
+    if (dir === 'N') { const res = run.crawl.forward(); refreshMinimap(); if (res.exited) { toOverworld(); render(); return; } stepped = true; }
+    else if (dir === 'S') { const res = run.crawl.back(); refreshMinimap(); if (res.exited) { toOverworld(); render(); return; } stepped = true; }
+    else if (dir === 'W') { run.crawl.turnLeft(); refreshMinimap(); }
+    else if (dir === 'E') { run.crawl.turnRight(); refreshMinimap(); }
     // A step into a new tile is the random-encounter surface (ENCOUNTERS LOCK).
     // A fight drops into combat mode; caches/mundane just annotate the crawl.
     if (stepped) {
