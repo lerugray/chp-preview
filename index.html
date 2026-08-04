@@ -6388,9 +6388,10 @@ const SHARED = {
 // These keys are mode-exclusive, so reusing a letter across modes never breaks
 // the "same key, same meaning" rule for the shared cluster above.
 const PER_MODE = {
-  overworld: { r: 'rest', R: 'rest', k: 'save', K: 'save', l: 'load', L: 'load' },
+  overworld: { r: 'rest', R: 'rest', k: 'save', K: 'save', l: 'load', L: 'load', u: 'worldmap', U: 'worldmap' },
   title: { l: 'load', L: 'load' },
-  dungeon: { n: 'map', N: 'map' },
+  dungeon: { n: 'map', N: 'map', u: 'worldmap', U: 'worldmap' },
+  city: { u: 'worldmap', U: 'worldmap' },
   creation: { r: 'reroll', R: 'reroll' },
   // M11 tactical combat: the four verbs + parley + flee. Keys avoid WASD/arrows (the
   // movement set stays movement-only, no shadowing) and the shared cluster; each verb's
@@ -6437,9 +6438,9 @@ const GLOBAL_HINTS = [
 const MODE_HINTS = {
   title: [['Space', 'begin'], ['L', 'continue']],
   creation: [['Space', 'accept'], ['R', 'deal again'], ['Esc', 'back']],
-  overworld: [['WASD', 'walk'], ['E', 'enter'], ['Q', 'journal'], ['R', 'rest'], ['K', 'save'], ['L', 'load']],
-  dungeon: [['W/S', 'move'], ['A/D', 'turn'], ['N', 'map'], ['Q', 'journal'], ['Esc', 'leave']],
-  city: [['WASD', 'walk'], ['E', 'enter'], ['Q', 'journal'], ['Esc', 'leave']],
+  overworld: [['WASD', 'walk'], ['E', 'enter'], ['U', 'map'], ['Q', 'journal'], ['R', 'rest'], ['K', 'save'], ['L', 'load']],
+  dungeon: [['W/S', 'move'], ['A/D', 'turn'], ['N', 'dungeon map'], ['U', 'world map'], ['Q', 'journal'], ['Esc', 'leave']],
+  city: [['WASD', 'walk'], ['E', 'enter'], ['U', 'map'], ['Q', 'journal'], ['Esc', 'leave']],
   journal: [['N', 'new note'], ['W/S', 'select'], ['E', 'revise'], ['Q', 'close']],
   building: [['Space', 'back']],
   combat: [['F', 'strike'], ['G', 'guard'], ['R', 'reach'], ['V', 'gambit'], ['T', 'parley'], ['Esc', 'break away']],
@@ -6706,22 +6707,30 @@ return { natureLines, chip, packChips, buildKeybar, buildHudBar, hudBarHeight, b
 
 __M["src/engine/minimap.js"] = (function () {
 
-// First-person dungeon minimap (cp-017).
+// cp-019 — grid-based dungeon minimap with progressive reveal.
 //
-// Drives the map from the REAL explored/visited state the crawl tracks: a Set of
-// fine-tile coordinates that have been seen. No parallel truth, no second grid.
-// Rendering is deliberately primitive — small square cells, a single-hue player
-// arrow, an exit glyph — so it reads as part of the same 1980s monochrome machine.
+// One cell per explored fine tile/room-unit. Cells/features appear only as the
+// party walks, sees, or triggers them; no omniscient map. The same state object
+// is persisted to the world's map memory so what one character reveals stays
+// revealed for the next.
 
 function minimapKey(x, y) { return `${x},${y}`; }
 
+function parseKey(k) { return k.split(',').map(Number); }
+
 /**
  * Create a minimap state object. `markAround` reveals floor tiles in a small
- * radius around a point (the crawl's current tile), which is enough to show the
- * corridor shape as the party moves without cheating walls into view.
+ * radius around a point (the crawl's current tile), and `markFeature` records
+ * discovered points of interest (stairs, caches, shrines, encounters) at their
+ * cell. The state can be serialized and restored so it survives a save/load.
  */
-function createMinimap() {
-  const explored = new Set();
+function createMinimap(saved = null) {
+  const explored = new Set(saved && saved.explored ? saved.explored : []);
+  const features = new Map();
+  if (saved && saved.features) {
+    for (const [k, v] of saved.features) features.set(k, { ...v });
+  }
+
   return {
     mark(x, y) { explored.add(minimapKey(x, y)); },
     markAround(dungeon, cx, cy, radius = 1) {
@@ -6732,8 +6741,26 @@ function createMinimap() {
         }
       }
     },
+    markFeature(x, y, kind, label = null) {
+      features.set(minimapKey(x, y), { kind, label });
+    },
     isExplored(x, y) { return explored.has(minimapKey(x, y)); },
+    featureAt(x, y) { return features.get(minimapKey(x, y)) || null; },
     get explored() { return explored; },
+    get features() { return features; },
+    serialize() {
+      return { explored: [...explored], features: [...features.entries()] };
+    },
+    restore(saved) {
+      if (!saved) return this;
+      explored.clear();
+      if (saved.explored) for (const k of saved.explored) explored.add(k);
+      features.clear();
+      if (saved.features) {
+        for (const [k, v] of saved.features) features.set(k, { ...v });
+      }
+      return this;
+    },
   };
 }
 
@@ -6753,19 +6780,35 @@ function facingArrow(facing, cx, cy, r) {
   }
 }
 
+/** Glyph to draw for a feature kind. */
+function featureGlyph(kind) {
+  switch (kind) {
+    case 'stairs': return '×';
+    case 'cache': return '⚑';
+    case 'shrine': return '†';
+    case 'encounter': return '!';
+    case 'gate': return '▫';
+    default: return '·';
+  }
+}
+
 /**
  * Build the logical contents of the minimap for the current frame.
- * Headless-testable: it maps the explored Set to drawn cells and reports the
- * player marker / exit marker state without touching a canvas.
+ * Headless-testable: maps the explored Set to drawn cells and reports features
+ * without touching a canvas.
  */
 function gatherMinimap(dungeon, minimap, crawl) {
   const floors = [];
   const walls = [];
+  const feats = [];
   for (let y = 0; y < dungeon.height; y++) {
     for (let x = 0; x < dungeon.width; x++) {
       if (!minimap.isExplored(x, y)) continue;
-      if (dungeon.floorAt(x, y)) floors.push({ x, y });
-      else walls.push({ x, y });
+      if (dungeon.floorAt(x, y)) {
+        floors.push({ x, y });
+        const f = minimap.featureAt(x, y);
+        if (f) feats.push({ x, y, ...f });
+      } else walls.push({ x, y });
     }
   }
   const exit = {
@@ -6778,30 +6821,33 @@ function gatherMinimap(dungeon, minimap, crawl) {
     height: dungeon.height,
     floors,
     walls,
+    features: feats,
     exit,
     player: { x: crawl.x, y: crawl.y, facing: crawl.facing },
   };
 }
 
 /**
- * Draw the minimap into the scene viewport. The map is a small square-pixeled
- * inset in the current monochrome palette; unexplored tiles stay dark (fog).
+ * Draw the grid-based minimap into the scene viewport. The map is a chunky,
+ * high-contrast square inset in the current monochrome palette; unexplored
+ * tiles stay dark (fog). The inset scales to fit `maxSize` while keeping cells
+ * an integer pixel size.
  */
 function drawMinimap(ctx, {
   dungeon, crawl, minimap, shadeColor,
   x, y, maxSize = 120,
 }) {
   const data = gatherMinimap(dungeon, minimap, crawl);
-  const scale = Math.max(2, Math.min(maxSize / data.width, maxSize / data.height) | 0);
+  const scale = Math.max(3, Math.min(maxSize / data.width, maxSize / data.height) | 0);
   const mw = data.width * scale;
   const mh = data.height * scale;
 
   ctx.save();
-  ctx.globalAlpha = 0.85;
+  ctx.globalAlpha = 0.9;
   ctx.fillStyle = shadeColor(0);
   ctx.fillRect(x, y, mw + 2, mh + 2);
   ctx.globalAlpha = 1;
-  ctx.strokeStyle = shadeColor(2);
+  ctx.strokeStyle = shadeColor(3);
   ctx.lineWidth = 1;
   ctx.strokeRect(x, y, mw + 2, mh + 2);
 
@@ -6811,12 +6857,31 @@ function drawMinimap(ctx, {
     ctx.fillRect(x + 1 + f.x * scale, y + 1 + f.y * scale, scale, scale);
   }
 
+  // Explored wall cells (only show walls that have been seen, never cheat).
+  ctx.fillStyle = shadeColor(1);
+  for (const w of data.walls) {
+    ctx.fillRect(x + 1 + w.x * scale, y + 1 + w.y * scale, scale, scale);
+  }
+
+  // Feature glyphs: stairs/cache/shrine/encounter marks, drawn centred on cell.
+  if (data.features.length) {
+    ctx.fillStyle = shadeColor(6);
+    ctx.font = `${Math.max(8, scale)}px monospace`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const f of data.features) {
+      const fx = x + 1 + f.x * scale + scale / 2;
+      const fy = y + 1 + f.y * scale + scale / 2;
+      ctx.fillText(featureGlyph(f.kind), fx, fy + 1);
+    }
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  }
+
   // Exit marker — a small cross, only once the exit tile has been explored.
   if (data.exit.seen) {
     const ex = x + 1 + data.exit.x * scale + scale / 2;
     const ey = y + 1 + data.exit.y * scale + scale / 2;
     const m = Math.max(2, scale * 0.35);
-    ctx.strokeStyle = shadeColor(6);
+    ctx.strokeStyle = shadeColor(5);
     ctx.lineWidth = Math.max(1, scale / 4);
     ctx.beginPath();
     ctx.moveTo(ex - m, ey - m); ctx.lineTo(ex + m, ey + m);
@@ -6840,7 +6905,325 @@ function drawMinimap(ctx, {
   return { width: mw + 2, height: mh + 2 };
 }
 
-return { minimapKey, createMinimap, exploreCurrent, facingArrow, gatherMinimap, drawMinimap };
+return { minimapKey, createMinimap, exploreCurrent, facingArrow, featureGlyph, gatherMinimap, drawMinimap };
+})();
+
+__M["src/engine/worldmap.js"] = (function () {
+
+// cp-020 — worldmap state and renderer.
+//
+// Tracks what the lineage of strangers has learned about the overworld: visited
+// cells, known biomes, discovered sites/gates/routes, and significant locations
+// that earn a label. The state is world-persistent (serialized with the save).
+
+function worldKey(x, y) { return `${x},${y}`; }
+
+function parseKey(k) { return k.split(',').map(Number); }
+
+const FEATURE_SITE = 'site';
+const FEATURE_GATE = 'gate';
+const FEATURE_GATE_OPEN = 'gate-open';
+const FEATURE_START = 'start';
+
+/** Create the world-persistent map-memory object. */
+function createWorldMapState(saved = null) {
+  const visited = new Set(saved && saved.visited ? saved.visited : []);
+  const sites = new Set(saved && saved.sites ? saved.sites : []);
+  const gates = new Set(saved && saved.gates ? saved.gates : []);
+  const biomes = new Set(saved && saved.biomes ? saved.biomes : []);
+  const labels = [];
+  if (saved && saved.labels) {
+    for (const l of saved.labels) labels.push({ ...l });
+  }
+  // Per-site dungeon memory: keyed by world coordinate, stores the explored cell
+  // set + feature map from the dungeon minimap. Survives permadeath so later
+  // strangers inherit the same revealed map.
+  const dungeons = new Map();
+  if (saved && saved.dungeons) {
+    for (const [k, v] of saved.dungeons) dungeons.set(k, { explored: new Set(v.explored || []), features: new Map(v.features || []) });
+  }
+
+  function dungeonKey(site) { return worldKey(site.x, site.y); }
+  function getDungeon(site) {
+    const k = dungeonKey(site);
+    if (!dungeons.has(k)) return null;
+    const d = dungeons.get(k);
+    return { explored: [...d.explored], features: [...d.features.entries()] };
+  }
+  function setDungeon(site, minimap) {
+    const k = dungeonKey(site);
+    const ser = minimap ? minimap.serialize() : { explored: [], features: [] };
+    dungeons.set(k, { explored: new Set(ser.explored), features: new Map(ser.features) });
+  }
+
+  function visit(x, y) { visited.add(worldKey(x, y)); }
+  function knowSite(site) {
+    const key = worldKey(site.x, site.y);
+    if (sites.has(key)) return false;
+    sites.add(key);
+    labels.push({ x: site.x, y: site.y, text: site.name || site.id || 'a site', kind: FEATURE_SITE });
+    return true;
+  }
+  function knowGate(gate) {
+    if (gates.has(gate.id)) return false;
+    gates.add(gate.id);
+    labels.push({ x: gate.x, y: gate.y, text: gate.label || gate.id, kind: FEATURE_GATE });
+    return true;
+  }
+  function knowBiome(id) { biomes.add(id); }
+  function addLabel(x, y, text, kind = null) {
+    labels.push({ x, y, text, kind });
+  }
+  function isVisited(x, y) { return visited.has(worldKey(x, y)); }
+  function hasSite(x, y) { return sites.has(worldKey(x, y)); }
+  function hasGate(id) { return gates.has(id); }
+  function hasBiome(id) { return biomes.has(id); }
+
+  return {
+    visit,
+    knowSite,
+    knowGate,
+    knowBiome,
+    addLabel,
+    isVisited,
+    hasSite,
+    hasGate,
+    hasBiome,
+    getDungeon,
+    setDungeon,
+    get visited() { return visited; },
+    get sites() { return sites; },
+    get gates() { return gates; },
+    get biomes() { return biomes; },
+    get labels() { return labels; },
+    get dungeons() { return dungeons; },
+    serialize() {
+      const dungeonEntries = [];
+      for (const [k, v] of dungeons) {
+        dungeonEntries.push([k, { explored: [...v.explored], features: [...v.features.entries()] }]);
+      }
+      return {
+        visited: [...visited],
+        sites: [...sites],
+        gates: [...gates],
+        biomes: [...biomes],
+        labels: labels.map((l) => ({ ...l })),
+        dungeons: dungeonEntries,
+      };
+    },
+    restore(saved) {
+      if (!saved) return this;
+      visited.clear(); if (saved.visited) for (const k of saved.visited) visited.add(k);
+      sites.clear(); if (saved.sites) for (const k of saved.sites) sites.add(k);
+      gates.clear(); if (saved.gates) for (const k of saved.gates) gates.add(k);
+      biomes.clear(); if (saved.biomes) for (const k of saved.biomes) biomes.add(k);
+      labels.length = 0; if (saved.labels) for (const l of saved.labels) labels.push({ ...l });
+      dungeons.clear();
+      if (saved.dungeons) {
+        for (const [k, v] of saved.dungeons) {
+          dungeons.set(k, { explored: new Set(v.explored || []), features: new Map(v.features || []) });
+        }
+      }
+      return this;
+    },
+  };
+}
+
+/**
+ * Build a headless-testable worldmap frame for the current known world.
+ * Returns the visible tile set, discovered features, routes, and labels.
+ */
+function gatherWorldmap({ world, biomes, mapState, party, start }) {
+  const sites = world.listSites();
+  const gates = world.listGates();
+
+  // Bounds: include visited cells + known sites/gates with a small margin.
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const consider = (x, y) => {
+    minX = Math.min(minX, x); minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+  };
+  for (const k of mapState.visited) { const [x, y] = parseKey(k); consider(x, y); }
+  for (const s of sites) if (mapState.hasSite(s.x, s.y)) consider(s.x, s.y);
+  for (const g of gates) if (mapState.hasGate(g.id)) consider(g.x, g.y);
+  if (start) consider(start.x, start.y);
+  consider(party.x, party.y);
+
+  if (!isFinite(minX)) { minX = party.x - 4; minY = party.y - 4; maxX = party.x + 4; maxY = party.y + 4; }
+  const pad = 2;
+  minX -= pad; minY -= pad; maxX += pad; maxY += pad;
+
+  const tiles = [];
+  const features = [];
+  const routes = [];
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      const known = mapState.isVisited(x, y);
+      const site = world.siteAt(x, y);
+      const gate = world.gateAt(x, y);
+      const biome = biomes.biomeAt(x, y);
+      const inKnownBiome = biome && mapState.hasBiome(biome.id);
+      // Fog: only draw cells we've visited. Sites/gates are drawn once discovered
+      // even if their cell was never stepped on.
+      if (!known && !(site && mapState.hasSite(site.x, site.y)) && !(gate && mapState.hasGate(gate.id))) continue;
+
+      let terrain = 'fog';
+      if (known) {
+        const tile = world.tileAt(x, y);
+        if (!tile.passable) terrain = 'blocked';
+        else if (gate && !world.isGateOpen(gate.id)) terrain = 'gate';
+        else terrain = 'open';
+      }
+      tiles.push({ x, y, terrain, known, biome: inKnownBiome ? biome.id : null });
+
+      if (site && mapState.hasSite(site.x, site.y)) {
+        features.push({ x, y, kind: FEATURE_SITE, name: site.name || site.id, siteKind: site.kind });
+      }
+      if (gate && mapState.hasGate(gate.id)) {
+        features.push({ x, y, kind: world.isGateOpen(gate.id) ? FEATURE_GATE_OPEN : FEATURE_GATE, name: gate.label || gate.id });
+      }
+      if (start && x === start.x && y === start.y && mapState.isVisited(start.x, start.y)) {
+        features.push({ x, y, kind: FEATURE_START, name: 'where you began' });
+      }
+    }
+  }
+
+  // Simple route lines between adjacent known open cells.
+  const key = (x, y) => `${x},${y}`;
+  const openSet = new Set(tiles.filter((t) => t.terrain === 'open' || t.terrain === 'gate').map((t) => key(t.x, t.y)));
+  for (const t of tiles) {
+    if (t.terrain !== 'open' && t.terrain !== 'gate') continue;
+    const right = key(t.x + 1, t.y);
+    const down = key(t.x, t.y + 1);
+    if (openSet.has(right)) routes.push({ x1: t.x, y1: t.y, x2: t.x + 1, y2: t.y });
+    if (openSet.has(down)) routes.push({ x1: t.x, y1: t.y, x2: t.x, y2: t.y + 1 });
+  }
+
+  return {
+    bounds: { minX, minY, maxX, maxY },
+    tiles,
+    features,
+    routes,
+    labels: mapState.labels.slice(),
+    player: { x: party.x, y: party.y },
+  };
+}
+
+/** Glyph for a site kind. */
+function siteGlyph(kind) {
+  switch (kind) {
+    case 'city': return '⌂';
+    case 'dungeon': return '▪';
+    default: return '◆';
+  }
+}
+
+/**
+ * Draw the worldmap into the scene viewport. The map fills a centred card
+ * that fits inside `maxW × maxH`; unknown regions are absent (black).
+ */
+function drawWorldmap(ctx, {
+  world, biomes, mapState, party, start, shadeColor, accentColor,
+  maxW = 320, maxH = 320,
+}) {
+  const data = gatherWorldmap({ world, biomes, mapState, party, start });
+  const bw = data.bounds.maxX - data.bounds.minX + 1;
+  const bh = data.bounds.maxY - data.bounds.minY + 1;
+  const cell = Math.max(4, Math.min(maxW / bw, maxH / bh) | 0);
+  const mw = bw * cell;
+  const mh = bh * cell;
+  const x = Math.round((ctx.canvas.width - mw) / 2);
+  const y = Math.round((ctx.canvas.height - mh) / 2);
+
+  ctx.save();
+  ctx.globalAlpha = 0.95;
+  ctx.fillStyle = shadeColor(0);
+  ctx.fillRect(x - 4, y - 4, mw + 8, mh + 8);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = shadeColor(3);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x - 4, y - 4, mw + 8, mh + 8);
+
+  // Terrain cells.
+  for (const t of data.tiles) {
+    const px = x + (t.x - data.bounds.minX) * cell;
+    const py = y + (t.y - data.bounds.minY) * cell;
+    if (t.terrain === 'fog') {
+      ctx.fillStyle = shadeColor(0);
+    } else if (t.terrain === 'blocked') {
+      ctx.fillStyle = shadeColor(1);
+    } else if (t.terrain === 'gate') {
+      ctx.fillStyle = shadeColor(2);
+    } else {
+      ctx.fillStyle = t.biome ? shadeColor(3) : shadeColor(2);
+    }
+    ctx.fillRect(px, py, cell, cell);
+  }
+
+  // Routes.
+  if (data.routes.length) {
+    ctx.strokeStyle = shadeColor(4);
+    ctx.lineWidth = Math.max(1, cell / 4);
+    ctx.beginPath();
+    for (const r of data.routes) {
+      ctx.moveTo(x + (r.x1 - data.bounds.minX) * cell + cell / 2, y + (r.y1 - data.bounds.minY) * cell + cell / 2);
+      ctx.lineTo(x + (r.x2 - data.bounds.minX) * cell + cell / 2, y + (r.y2 - data.bounds.minY) * cell + cell / 2);
+    }
+    ctx.stroke();
+  }
+
+  // Features: sites, gates, start.
+  if (data.features.length) {
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const f of data.features) {
+      const px = x + (f.x - data.bounds.minX) * cell + cell / 2;
+      const py = y + (f.y - data.bounds.minY) * cell + cell / 2;
+      if (f.kind === FEATURE_SITE) {
+        ctx.fillStyle = shadeColor(6);
+        ctx.font = `${Math.max(8, cell)}px monospace`;
+        ctx.fillText(siteGlyph(f.siteKind), px, py + 1);
+      } else if (f.kind === FEATURE_GATE || f.kind === FEATURE_GATE_OPEN) {
+        ctx.fillStyle = f.kind === FEATURE_GATE_OPEN ? accentColor(0.9) : shadeColor(5);
+        ctx.font = `${Math.max(8, cell)}px monospace`;
+        ctx.fillText('▫', px, py + 1);
+      } else if (f.kind === FEATURE_START) {
+        ctx.fillStyle = accentColor(0.8);
+        ctx.font = `${Math.max(8, cell)}px monospace`;
+        ctx.fillText('○', px, py + 1);
+      }
+    }
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  }
+
+  // Party marker.
+  const px = x + (data.player.x - data.bounds.minX) * cell + cell / 2;
+  const py = y + (data.player.y - data.bounds.minY) * cell + cell / 2;
+  ctx.fillStyle = accentColor();
+  ctx.beginPath();
+  ctx.arc(px, py, Math.max(2, cell / 2 - 1), 0, Math.PI * 2);
+  ctx.fill();
+
+  // Labels for discovered significant locations.
+  const labelSet = data.labels.slice().reverse();
+  if (labelSet.length) {
+    ctx.font = '11px monospace';
+    for (const l of labelSet) {
+      if (l.x < data.bounds.minX || l.x > data.bounds.maxX || l.y < data.bounds.minY || l.y > data.bounds.maxY) continue;
+      const lx = x + (l.x - data.bounds.minX) * cell + cell + 2;
+      const ly = y + (l.y - data.bounds.minY) * cell + cell / 2 + 4;
+      ctx.fillStyle = shadeColor(0);
+      const w = ctx.measureText(l.text).width + 4;
+      ctx.fillRect(lx - 2, ly - 11, w, 14);
+      ctx.fillStyle = shadeColor(6);
+      ctx.fillText(l.text, lx, ly);
+    }
+  }
+
+  ctx.restore();
+  return { x, y, width: mw + 8, height: mh + 8, cell, data };
+}
+
+return { worldKey, createWorldMapState, gatherWorldmap, siteGlyph, drawWorldmap, FEATURE_SITE, FEATURE_GATE, FEATURE_GATE_OPEN, FEATURE_START };
 })();
 
 __M["src/engine/panels.js"] = (function () {
@@ -7388,7 +7771,8 @@ const { renderFP } = __M["src/engine/fprender.js"];
 const { CANVAS_W, CANVAS_H, buildTitleDrawList, buildCreationDrawList, stripSeed, bustBoxFor } = __M["src/engine/layout.js"];
 const { buildKeybar, buildHelpOverlay, buildPanel, buildNatureDrawList } = __M["src/engine/chrome.js"];
 const { computeFrame, frameDisplay } = __M["src/engine/frame.js"];
-const { createMinimap, exploreCurrent, drawMinimap } = __M["src/engine/minimap.js"];
+const { createMinimap, exploreCurrent, drawMinimap, featureGlyph } = __M["src/engine/minimap.js"];
+const { createWorldMapState, drawWorldmap } = __M["src/engine/worldmap.js"];
 const { textWidth, ellipsize } = __M["src/engine/layout.js"];
 const { buildCombatDrawList, buildDeathDrawList, buildBuildingDrawList, buildJournalDrawList, buildSneakDrawList, buildPartyDrawList } = __M["src/engine/panels.js"];
 const { createJournal } = __M["src/engine/journal.js"];
@@ -7473,6 +7857,8 @@ function createGame(config = master) {
   // is the run's monotonic clock (bumped per step) — the when-stamp for notes and
   // the age the corruption engine reads.
   const journal = createJournal({ prose, seed: (world.seed ^ 0x1057) >>> 0 });
+  // cp-019/cp-020: world-persistent map memory (dungeon minimaps + overworld knownness).
+  const mapState = createWorldMapState();
   let tick = 0;
   function bumpTick() { tick += 1; }
   // The diagnosability event log (Part B): a ring buffer of side effects, stamped
@@ -7664,8 +8050,11 @@ function createGame(config = master) {
     const life = createDungeonLife(dungeon, { bestiary, seed: (dseed ^ 0x11fe) >>> 0, max: isChapel(site) ? 4 : 3 });
     // Visual register (M5): stable per dungeon so a site always looks the same.
     // chapel: the pinned landmark → full-collision prose throughout the crawl.
-    const minimap = createMinimap();
+    const minimap = createMinimap(mapState.getDungeon(site));
     minimap.markAround(dungeon, crawl.x, crawl.y);
+    minimap.markFeature(dungeon.entrance.x, dungeon.entrance.y, 'stairs', 'out');
+    // cp-020: entering a site marks it on the worldmap.
+    mapState.knowSite(site);
     return { site, dungeon, crawl, name, table, steps: 0, life, register: styleFor(dseed), chapel: isChapel(site), minimap };
   }
 
@@ -7740,7 +8129,12 @@ function createGame(config = master) {
   // you resume on the surface, which is always a valid place to be).
   const SAVE_VERSION = 1;
   function save() {
-    return { version: SAVE_VERSION, seed: world.seed, party: { x: party.x, y: party.y }, session: session.serialize(), journal: journal.serialize(), wanderers: wanderers.serialize(), events: events.serialize(), gates: world.serializeGates(), starterCaches: [...starterCachesTaken], tick };
+    return {
+      version: SAVE_VERSION, seed: world.seed, party: { x: party.x, y: party.y },
+      session: session.serialize(), journal: journal.serialize(), wanderers: wanderers.serialize(),
+      events: events.serialize(), gates: world.serializeGates(), starterCaches: [...starterCachesTaken],
+      tick, mapState: mapState.serialize(),
+    };
   }
   function load(snap) {
     if (!snap || snap.version !== SAVE_VERSION) throw new Error('load: incompatible save');
@@ -7754,6 +8148,7 @@ function createGame(config = master) {
     if (snap.events) events.restore(snap.events); else events.clear(); // old saves: empty log (migration-safe)
     world.restoreGates(snap.gates || []); // world-persistent opened gates (empty on old saves)
     starterCachesTaken.clear(); for (const k of snap.starterCaches || []) starterCachesTaken.add(k);
+    mapState.restore(snap.mapState || {}); // old saves: blank map memory (migration-safe)
     refreshCapacity(); // capacity follows the restored world milestones (E6)
     return true;
   }
@@ -7766,10 +8161,13 @@ function createGame(config = master) {
     return prose.describeTerrain('chamber', c.cx, c.cy, run.dungeon.seed, run.chapel ? { collide: true } : { weirdness: 0.7 });
   }
 
-  return { world, party, prose, names, dungeonKit, bestiary, encounters, biomes, chargen, loot, session, services, journal, wanderers, events, logEvent, exposure, bumpTick, get tick() { return tick; },
+  return {
+    world, party, prose, names, dungeonKit, bestiary, encounters, biomes, chargen, loot, session, services, journal, wanderers, events, logEvent, exposure, bumpTick, get tick() { return tick; },
     start, startTown, START_SAFE_RADIUS, START_CACHE_COUNT, nearStart, starterCaches: () => starterCaches.map((c) => ({ ...c })), densityFor,
     refreshCapacity, milestoneCapacity, social, talkPointers,
-    describeSite, describeBiomeGround, overworldStep, enterSite, enterCity, describeBuilding, enterBuilding, describeRoom, stepEncounter, save, load };
+    describeSite, describeBiomeGround, overworldStep, enterSite, enterCity, describeBuilding, enterBuilding, describeRoom, stepEncounter, save, load,
+    mapState,
+  };
 }
 
 function boot() {
@@ -7801,6 +8199,24 @@ function boot() {
   // (ADDENDUM 3). Each scene renderer sets it; paintConsole draws it.
   let sceneStatus = '';
 
+  // cp-020: mark the current overworld cell + biome as known on the worldmap.
+  function markWorldMap() {
+    game.mapState.visit(party.x, party.y);
+    const b = biomes.biomeAt(party.x, party.y);
+    if (b) game.mapState.knowBiome(b.id);
+    const g = world.gateAt(party.x, party.y);
+    if (g) game.mapState.knowGate(g);
+    for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const s = world.siteAt(party.x + dx, party.y + dy);
+      if (s) game.mapState.knowSite(s);
+    }
+  }
+
+  // cp-019: if we're inside a dungeon, persist its minimap before the world snapshot.
+  function stashDungeonMap() {
+    if (run && run.minimap && run.site) game.mapState.setDungeon(run.site, run.minimap);
+  }
+
   // mode: 'title' | 'creation' | 'overworld' | 'dungeon' | 'city' | 'building' |
   // 'combat' | 'death'. Title is brand + menu; creation is the dealt stranger.
   let mode = 'title';
@@ -7813,7 +8229,8 @@ function boot() {
   let showParty = false; // [Y] party-management surface (D3), any nav mode
   let partySel = 0;
   let showNature = false; // C4: the one-time "the stranger's nature" explainer overlay
-  let showMinimap = false; // cp-017: first-person dungeon minimap toggle
+  let showMinimap = false; // cp-017/cp-019: dungeon minimap toggle
+  let showWorldmap = false; // cp-020: worldmap overlay toggle
   const NATURE_KEY = 'chp-nature-seen';
   function natureSeen() { try { return !!(typeof localStorage !== 'undefined' && localStorage.getItem(NATURE_KEY)); } catch (_) { return false; } }
   function markNatureSeen() { try { if (typeof localStorage !== 'undefined') localStorage.setItem(NATURE_KEY, '1'); } catch (_) { /* ignore */ } }
@@ -8039,11 +8456,78 @@ function boot() {
     ctx.restore();
   }
 
-  // The legend items for a mode. D5: on the WORLD MAP the legend also names the
-  // enterable SITE glyphs (town / site / the Chapel) — those only exist on the map, so
-  // that's where the legend is most useful; the first-person corridor keeps the base
-  // entity/passability legend (access stays free, per the directive).
+  // The legend items for a mode. Each mode names only what it actually shows;
+  // overworld terrain rows do not leak into city streets or the first-person
+  // corridor, and dungeon/city get vocabularies matched to their own views.
   function legendItemsFor(mode) {
+    if (mode === 'city') {
+      return [
+        { art: 'PARTY', label: 'you · party' },
+        { art: 'WANDERER_NPC', label: 'folk · citizen' },
+        { art: 'CITY_STREET', label: 'street · walk' },
+        { art: 'CITY_BUILDING', label: 'building · blocked' },
+      ];
+    }
+    if (mode === 'dungeon') {
+      return [
+        {
+          label: 'you · party',
+          draw(ctx, x, y, sw, sc) {
+            const cx = x + sw / 2, cy = y + sw / 2, r = sw * 0.4;
+            ctx.fillStyle = sc(6);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - r);
+            ctx.lineTo(cx + r, cy + r);
+            ctx.lineTo(cx - r, cy + r);
+            ctx.closePath();
+            ctx.fill();
+          },
+        },
+        {
+          label: 'stairs/exit',
+          draw(ctx, x, y, sw, sc) {
+            ctx.fillStyle = sc(6);
+            ctx.font = `${sw}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(featureGlyph('stairs'), x + sw / 2, y + sw / 2 + 1);
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+          },
+        },
+        {
+          label: 'cache',
+          draw(ctx, x, y, sw, sc) {
+            ctx.fillStyle = sc(6);
+            ctx.font = `${sw}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(featureGlyph('cache'), x + sw / 2, y + sw / 2 + 1);
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+          },
+        },
+        {
+          label: 'encounter',
+          draw(ctx, x, y, sw, sc) {
+            ctx.fillStyle = sc(6);
+            ctx.font = `${sw}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(featureGlyph('encounter'), x + sw / 2, y + sw / 2 + 1);
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+          },
+        },
+        {
+          label: 'unexplored · fog',
+          draw(ctx, x, y, sw, sc) {
+            ctx.fillStyle = sc(0);
+            ctx.fillRect(x, y, sw, sw);
+          },
+        },
+      ];
+    }
     const base = [
       { art: 'PARTY', label: 'you' },
       { art: 'WANDERER_NPC', label: 'folk' },
@@ -8065,7 +8549,7 @@ function boot() {
   function legendHeight(mode) { return LEGEND_HEAD + legendItemsFor(mode).length * LEGEND_LH + 8; }
 
   // Draw the bottom-anchored legend inside panel rect `p`. Each row is a 14px
-  // swatch (the real tile/entity art) + a short label, within the palette law.
+  // swatch (real tile/entity art or a small drawn mark) + a short label.
   function paintLegend(p) {
     const items = legendItemsFor(mode);
     const sw = 14, lh = LEGEND_LH, padX = 10;
@@ -8081,7 +8565,8 @@ function boot() {
     ctx.fillText('— legend —', p.x + padX, y + 12);
     y += headH;
     for (const it of items) {
-      drawTile(ctx, TILE_ART.get(it.art), p.x + padX, y, sw, shadeColor);
+      if (it.draw) it.draw(ctx, p.x + padX, y, sw, shadeColor);
+      else drawTile(ctx, TILE_ART.get(it.art), p.x + padX, y, sw, shadeColor);
       ctx.fillStyle = shadeColor(it.hostile ? 6 : 5); ctx.font = '11px monospace';
       ctx.fillText(it.label, p.x + padX + sw + 8, y + sw - 3);
       y += lh;
@@ -8164,6 +8649,24 @@ function boot() {
     ctx.strokeStyle = shadeColor(5); ctx.lineWidth = 2;
     ctx.strokeRect(6, 6, CANVAS_W - 12, CANVAS_H - 12);
     paintRows(buildNatureDrawList());
+    ctx.restore();
+  }
+
+  // cp-020: the worldmap overlay, drawn as a centred card over the current scene.
+  function paintWorldmap() {
+    ctx.save();
+    ctx.globalAlpha = 0.96;
+    ctx.fillStyle = shadeColor(0);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+    const ox = Math.max(0, Math.round((canvas.width - CANVAS_W) / 2));
+    const oy = Math.max(0, Math.round((canvas.height - CANVAS_H) / 2));
+    ctx.translate(ox, oy);
+    ctx.strokeStyle = shadeColor(5); ctx.lineWidth = 2;
+    ctx.strokeRect(6, 6, CANVAS_W - 12, CANVAS_H - 12);
+    renderWorldmap();
+    ctx.fillStyle = shadeColor(4); ctx.font = '12px monospace';
+    ctx.fillText('[U]/[Esc] close', 28, CANVAS_H - 24);
     ctx.restore();
   }
 
@@ -8680,6 +9183,7 @@ function boot() {
   }
 
   function renderOverworld() {
+    markWorldMap();
     const s = frame.scene;
     world.streamAround(party.x, party.y);
     ctx.fillStyle = '#000';
@@ -8867,6 +9371,14 @@ function boot() {
     journalSel = ids[i];
   }
 
+  function renderWorldmap() {
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    drawWorldmap(ctx, {
+      world, biomes, mapState: game.mapState, party, start: game.start, shadeColor, accentColor,
+      maxW: CANVAS_W - 48, maxH: CANVAS_H - 80,
+    });
+  }
+
   function renderJournal() {
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     const entries = journalWriting ? [] : journal.view({ exposure: game.exposure(), now: game.tick + 1 });
@@ -9027,11 +9539,15 @@ function boot() {
     if (showInv) paintInventory();
     if (showParty) paintParty();
     if (showLog) paintEventLog();
+    if (showWorldmap) paintWorldmap();
     if (showNature) paintNature();
     if (showHelp) paintHelp();
   }
 
-  function toOverworld() { mode = 'overworld'; run = null; city = null; building = null; showMinimap = false; }
+  function toOverworld() {
+    if (run && run.minimap && run.site) mapState.setDungeon(run.site, run.minimap);
+    mode = 'overworld'; run = null; city = null; building = null; showMinimap = false;
+  }
 
   // Load the saved run (shared by title's [L] continue and overworld's [L]).
   function loadSave() {
@@ -9133,6 +9649,15 @@ function boot() {
       else if (d === 'S') logScroll = Math.max(0, logScroll - 1); // newer
       else if (e.key === 'c' || e.key === 'C') copyEventLog();
       else if (e.key === 'd' || e.key === 'D') dumpEventLog();
+      render(); return;
+    }
+    // cp-020: worldmap overlay ([U]) — opens from nav modes; captures input while open.
+    if (a === 'worldmap' && (mode === 'overworld' || mode === 'city' || mode === 'dungeon' || showWorldmap)) {
+      e.preventDefault(); showWorldmap = !showWorldmap; render(); return;
+    }
+    if (showWorldmap) {
+      e.preventDefault();
+      if (a === 'cancel' || a === 'worldmap') { showWorldmap = false; }
       render(); return;
     }
     // JOURNAL compose captures ALL printable input (letters type as text, not as
@@ -9313,6 +9838,7 @@ function boot() {
       if (a === 'talk') { e.preventDefault(); openSocialTalk(); return; }
       if (a === 'save') {
         e.preventDefault();
+        stashDungeonMap();
         try { localStorage.setItem(SAVE_KEY, JSON.stringify({ save: game.save(), scheme: SCHEME })); owNote = '[SEED] the operation is filed'; } catch (_) { owNote = '[SEED] the filing cabinet is locked'; }
         render(); return;
       }
@@ -9340,11 +9866,13 @@ function boot() {
             session.dropItem(item.uid);
             world.openGate(g.id);
             session.noteGateOpened();
+            mapState.knowGate(g);
             refreshCapacity(); // opening a gate is the XP (E6)
             owNote = `[SEED] you lay ${stripSeed(item.name)} across ${stripSeed(g.label)} — the way opens for good`;
             logEvent('gate', { mode: 'overworld', outcome: `opened ${stripSeed(g.label)}` });
             audio.sfx('cache');
           } else {
+            mapState.knowGate(g);
             owNote = `[SEED] ${stripSeed(g.label)} bars the way — you would need ${g.requiresTag} to cross`;
             audio.sfx('bump');
           }
@@ -9400,8 +9928,16 @@ function boot() {
       const foe = run.life && run.life.atTile(run.crawl.x, run.crawl.y);
       if (foe) { dungeonEnemy = foe; sneakNote = ''; mode = 'dungeonEnc'; render(); return; }
       const enc = stepEncounter(run);
-      if (enc && enc.kind === 'fight') { beginCombat(enc); render(); return; }
-      encLine = enc && enc.kind === 'cache' ? collectCache(enc) : encSummary(enc);
+      if (enc && enc.kind === 'fight') {
+        run.minimap.markFeature(run.crawl.x, run.crawl.y, 'encounter');
+        beginCombat(enc); render(); return;
+      }
+      if (enc && enc.kind === 'cache') {
+        encLine = collectCache(enc);
+        run.minimap.markFeature(run.crawl.x, run.crawl.y, 'cache');
+      } else {
+        encLine = encSummary(enc);
+      }
     }
     render();
   }
