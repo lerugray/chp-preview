@@ -37,6 +37,7 @@
 "use strict";
 var __DATA = Object.create(null);
 var __M = Object.create(null);
+__DATA["data/register/shop.json"] = {"_note":"[SEED] M12 shops — seeded-chaotic barter commerce. Stock tables, currency label, and player-facing refusal/no-offer lines. All strings [SEED] until Ray's voice pass.","currency":{"singular":"[SEED] grey coin","plural":"[SEED] grey coins"},"no_stock":"[SEED] the shelf is bare; even absence has a price here","sold_out":"[SEED] the last of it is gone; what remains is only the description","sell_empty":"[SEED] you have nothing the dealer wants to carry away","secret_spent":"[SEED] you have already told this room too much","refusal":{"money":"[SEED] the price is ${amount} grey coins; your purse disagrees","food":"[SEED] the price is food you do not carry","rest-offering":"[SEED] the price is an offering you have not kept","attention":"[SEED] the price is attention you cannot spare","blood":"[SEED] the price is blood; you have too little of it left","secrets":"[SEED] the price is a secret; you have none left to tell here","default":"[SEED] the price is something you cannot pay"},"buy_line":"[SEED] you lay down the price and take ${item}","blood_buy_line":"[SEED] you pay in blood — ${before}→${after} hp — and take ${item}","sell_line":"[SEED] the dealer counts out ${amount} grey coins for ${item}","sell_offer_line":"[SEED] the dealer will give ${amount} grey coins for ${items}","mislabel_reveal":"[SEED] it is not what the label said — it is ${trueName}","archetypes":{"port":{"stock":[{"name":"[SEED] a ration of grey bread","tags":["food"]},{"name":"[SEED] a dried fish","tags":["food"]},{"name":"[SEED] a jar of pickled eyes","tags":["food"]},{"name":"[SEED] a folding knife"},{"name":"[SEED] a spool of red thread","tags":["attention"]},{"name":"[SEED] a half-empty flask","tags":["rest-offering"]},{"name":"[SEED] a corroded key"},{"name":"[SEED] a small tonic","effect":{"kind":"heal","power":[2,4]},"charges":1,"tags":["consumable"]},{"name":"[SEED] a rusty hatchet","weapon":{"name":"rusty hatchet","dmg":[2,4]}},{"name":"[SEED] a patched coat","armor":{"name":"patched coat","absorb":1}},{"name":"[SEED] a brass token stamped with a closed eye"}]},"bureau":{"stock":[{"name":"[SEED] a folded offering-slip","tags":["rest-offering"]},{"name":"[SEED] a wax-sealed letter","tags":["attention"]},{"name":"[SEED] a file number that matches no file"},{"name":"[SEED] a stamp that marks the wrong date"},{"name":"[SEED] a vial of someone else’s blood","tags":["blood"]},{"name":"[SEED] a warding charm","effect":{"kind":"status","status":{"id":"WARDED","polarity":"good","duration":3,"amount":2}},"charges":1,"tags":["secrets"]},{"name":"[SEED] a key that fits no lock you've met"},{"name":"[SEED] a coin that always lands on its edge"},{"name":"[SEED] a weighted club","weapon":{"name":"weighted club","dmg":[3,5]}},{"name":"[SEED] a tin buckler","armor":{"name":"tin buckler","absorb":2}},{"name":"[SEED] a page torn from a book you were about to write"}]},"pilgrimage":{"stock":[{"name":"[SEED] a half-empty flask","tags":["rest-offering"]},{"name":"[SEED] a dried fish","tags":["food"]},{"name":"[SEED] a prayer written backwards"},{"name":"[SEED] a finger-bone worn smooth by counting"},{"name":"[SEED] a warding charm","effect":{"kind":"status","status":{"id":"WARDED","polarity":"good","duration":3,"amount":2}},"charges":1,"tags":["secrets"]},{"name":"[SEED] a small tonic","effect":{"kind":"heal","power":[2,4]},"charges":1,"tags":["consumable"]},{"name":"[SEED] a candle that drips upwards"},{"name":"[SEED] a pocket watch stopped at 5:00"},{"name":"[SEED] a patched coat","armor":{"name":"patched coat","absorb":1}},{"name":"[SEED] a whistle that makes only silence"},{"name":"[SEED] a folded map of a city that isn't there"}]},"market":{"stock":[{"name":"[SEED] a ration of grey bread","tags":["food"]},{"name":"[SEED] a folded offering-slip","tags":["rest-offering"]},{"name":"[SEED] a wax-sealed letter","tags":["attention"]},{"name":"[SEED] a spool of red thread","tags":["attention"]},{"name":"[SEED] a jar of pickled eyes","tags":["food"]},{"name":"[SEED] a vial of someone else’s blood","tags":["blood"]},{"name":"[SEED] a warding charm","effect":{"kind":"status","status":{"id":"WARDED","polarity":"good","duration":3,"amount":2}},"charges":1,"tags":["secrets"]},{"name":"[SEED] a small tonic","effect":{"kind":"heal","power":[2,4]},"charges":1,"tags":["consumable"]},{"name":"[SEED] a rusty hatchet","weapon":{"name":"rusty hatchet","dmg":[2,4]}},{"name":"[SEED] a weighted club","weapon":{"name":"weighted club","dmg":[3,5]}},{"name":"[SEED] a tin buckler","armor":{"name":"tin buckler","absorb":2}}]},"garrison":{"stock":[{"name":"[SEED] a dried fish","tags":["food"]},{"name":"[SEED] a half-empty flask","tags":["rest-offering"]},{"name":"[SEED] a folding knife"},{"name":"[SEED] a file number that matches no file"},{"name":"[SEED] a stamp that marks the wrong date"},{"name":"[SEED] a corroded key"},{"name":"[SEED] a rusty hatchet","weapon":{"name":"rusty hatchet","dmg":[2,4]}},{"name":"[SEED] a weighted club","weapon":{"name":"weighted club","dmg":[3,5]}},{"name":"[SEED] a patched coat","armor":{"name":"patched coat","absorb":1}},{"name":"[SEED] a tin buckler","armor":{"name":"tin buckler","absorb":2}},{"name":"[SEED] a warding charm","effect":{"kind":"status","status":{"id":"WARDED","polarity":"good","duration":3,"amount":2}},"charges":1,"tags":["secrets"]}]}},"fallback":{"stock":[{"name":"[SEED] a ration of grey bread","tags":["food"]},{"name":"[SEED] a half-empty flask","tags":["rest-offering"]},{"name":"[SEED] a small tonic","effect":{"kind":"heal","power":[2,4]},"charges":1,"tags":["consumable"]},{"name":"[SEED] a corroded key"},{"name":"[SEED] a rusty hatchet","weapon":{"name":"rusty hatchet","dmg":[2,4]}}]}};
 __DATA["data/world/master.json"] = {"seed":2323,"chunkSize":16,"streamRadius":1,"noise":{"octaves":4,"freq":0.07,"lacunarity":2,"gain":0.5},"bands":[{"tile":"DEEP","max":0.3},{"tile":"WATER","max":0.38},{"tile":"SAND","max":0.44},{"tile":"GRASS","max":0.62},{"tile":"FOREST","max":0.74},{"tile":"HILL","max":0.85},{"tile":"MOUNT","max":1.01}],"start":{"x":5,"y":5},"sites":[{"id":"chapel-0","x":8,"y":6,"kind":"dungeon","name":"[SEED] The Chapel Perilous"},{"id":"waystation-23","x":3,"y":9,"kind":"dungeon","name":"[SEED] Waystation 23"},{"id":"hive-5","x":12,"y":11,"kind":"city","name":"[SEED] Hive of the Fifth"}],"gates":[{"id":"fen-ford-0","x":11,"y":15,"requiresTag":"ford","label":"[SEED] the drowned ford"}]};
 __DATA["data/world/biomes.json"] = {"_note":"[SEED] M9 BIOMES (DIRECTIONS-2026-08-02-BIOMES) — guaranteed areas present in EVERY run, alongside the procedural material. Placement is ABSOLUTE world coords (the same model as sites) so a given world always reads the same; each biome is a chebyshev square region (center +/- radius) and regions MUST NOT overlap (the engine validates this by construction). Four identity channels wire off these defs: terrain `dress` ({ baseTileId: artId } — art added M9 inc2), monster/NPC pool `wanderers` + encounter `table`, and the vibe pair `weirdness` + `register` (the dominant register the prose engine leans on in-biome). The Chapel Perilous sits inside `perilous-verge` and keeps its full-collision pin. Player-facing biome flavor is generated prose ([SEED] at output); the discrete event fragments live in data/register/biomes.json.","biomes":[{"id":"perilous-verge","name":"[SEED] The Perilous Verge","blurb":"[SEED] the unquiet ground that leans toward the Chapel","center":{"x":8,"y":6},"radius":2,"weirdness":0.95,"register":"conspiratorial","wanderers":["hollow-pilgrim","discordian-monk"],"table":"biome_perilous_verge","dress":{"GRASS":"VERGE_GROUND","SAND":"VERGE_GROUND"}},{"id":"pine-barrens","name":"[SEED] The Pine Barrens","blurb":"[SEED] black conifers over rattling knoll-rock","center":{"x":20,"y":2},"radius":3,"weirdness":0.55,"register":"ominous","wanderers":["law-of-fives-hound","hollow-pilgrim","pine-warden"],"table":"biome_pine_barrens","dress":{"FOREST":"PINE_BARRENS","GRASS":"PINE_FLOOR"}},{"id":"salt-flats","name":"[SEED] The Salt Flats","blurb":"[SEED] a bleached pan surveyed to no conclusion","center":{"x":4,"y":18},"radius":3,"weirdness":0.2,"register":"clinical","wanderers":["carrion-crow","hollow-pilgrim","salt-preacher"],"table":"biome_salt_flats","dress":{"GRASS":"SALT_PAN","SAND":"SALT_CRUST"}},{"id":"drowned-fen","name":"[SEED] The Drowned Fen","blurb":"[SEED] reed-water that keeps its own filing system","center":{"x":11,"y":16},"radius":3,"weirdness":0.7,"register":"conspiratorial","wanderers":["carrion-crow","discordian-monk","fen-lantern"],"table":"biome_drowned_fen","dress":{"GRASS":"FEN_REED","SAND":"FEN_MUD","WATER":"FEN_POOL"}}]};
 __DATA["data/register/biomes.json"] = {"_note":"[SEED] M9 biome ambient-event fragments (events channel). Short subject phrases the prose engine wraps with a generated, register-weighted event tail (biome weirdness + register). Every fragment is [SEED]; the composed output is [SEED] too — Ray's voice pass replaces the wording, the event engine stays. Keyed by biome id.","events":{"perilous-verge":["[SEED] the ground disagrees with your feet","[SEED] a door stands here with no wall around it","[SEED] the fnords thicken until you can almost read them","[SEED] your shadow arrives a moment before you do","[SEED] a bell you cannot see is rung once, apologetically"],"pine-barrens":["[SEED] the pines close the path quietly behind you","[SEED] something in the dark counts your steps in fives","[SEED] resin holds an old scream very still","[SEED] a knoll-stone settles as though it had been listening","[SEED] the needles underfoot spell nothing you will admit to reading"],"salt-flats":["[SEED] the pan records your passage in a thin line of salt","[SEED] a survey stake marks nothing here, precisely","[SEED] the heat bends the horizon into a standing figure","[SEED] the glare completes its report and files you under it","[SEED] a wind crosses the flat carrying the smell of old paper"],"drowned-fen":["[SEED] the reeds pass a folded note between them","[SEED] a bell rings once, underwater, and is corrected","[SEED] the water keeps its own filing system and consults it","[SEED] something surfaces, reconsiders the whole affair, and sinks","[SEED] your reflection lingers a beat after you move on"]}};
@@ -4167,6 +4168,11 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
   // gets a session-unique uid so the shell can equip/drop a specific one.
   let inventory = [];
   let itemUid = 0;
+  // M12 shops — a light currency tracked across lives (found in caches/loot and
+  // earned by selling). The purse persists death because the world persists.
+  let money = 0;
+  // One secret per shop per life: the "tell the dealer something" interaction.
+  let shopSecretsTold = new Set();
   // Equipment (M11 §1b) — exactly three slots: weapon / armor / accessory. The weapon
   // slot's live profile IS pc.weapon (the only thing combat's ATTACK reads — power from
   // items). armor/accessory hold their equipped item records here; combat's adaptive
@@ -4185,10 +4191,21 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     inventory.splice(i, 1);
     return true;
   }
+  // M12 shops — reveal a mislabeled listing the first time it is used or equipped.
+  // Returns true if a reveal happened. The true name is written back onto the item.
+  function revealItem(uid) {
+    const it = inventory.find((x) => x.uid === uid);
+    if (!it || !it.mislabel) return false;
+    it.name = it.trueName || it.name;
+    delete it.mislabel;
+    delete it.trueName;
+    return true;
+  }
   // Apply a combat item use to the pack: a finite-charge consumable loses a charge (and
   // is removed at zero); a reusable item is untouched. Returns the remaining charges (or
   // null for reusable / not-found). The combat engine reports {uid, spent} to drive this.
   function consumeItem(uid) {
+    revealItem(uid); // M12: mislabel reveal-on-use
     const it = inventory.find((x) => x.uid === uid);
     if (!it) return null;
     if (it.charges == null) return null; // reusable — nothing to spend
@@ -4209,6 +4226,7 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     if (!slot) return false; // not equippable
 
     if (slot === 'weapon') {
+      revealItem(uid); // M12: mislabel reveal-on-equip
       const old = pc.weapon;
       pc.weapon = { name: it.weapon.name, dmg: it.weapon.dmg.slice() };
       dropItem(uid);
@@ -4216,6 +4234,7 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
       return true;
     }
     // armor / accessory: swap the slot's held record, stow the previous one back.
+    revealItem(uid); // M12: mislabel reveal-on-equip
     const prev = equipment[slot];
     equipment[slot] = { ...raw };
     dropItem(uid);
@@ -4241,6 +4260,7 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     memberships = new Set(); // a new stranger is uninitiated
     inventory = []; // ...and carries nothing yet (mortal layer, lost on death)
     equipment = { armor: null, accessory: null }; // ...and wears nothing found
+    shopSecretsTold = new Set(); // M12: a new life has fresh secrets to tell
     life = { clears: 0, followersLost: 0, gatesOpened: 0 }; // a fresh life keeps no deeds yet
     return pc;
   }
@@ -4309,6 +4329,15 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
   function noteGateOpened() { life.gatesOpened += 1; }
   const isCleared = (id) => cleared.has(id);
 
+  // M12 shops — currency and secret-economy helpers.
+  function addCoins(n) { money = Math.max(0, money + (n | 0)); return money; }
+  const addMoney = addCoins;
+  function tellSecret(shopId) {
+    if (shopId == null || shopSecretsTold.has(shopId)) return false;
+    shopSecretsTold.add(shopId);
+    return true;
+  }
+
   // Start a combat from the current roster vs an encounter's foes. Returns a
   // combat bound to the pc + roster (so talk/recruit work).
   function startCombat(encounter, combatSeed = 0, opts = {}) {
@@ -4376,6 +4405,8 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
       inventory: inventory.map((it) => ({ ...it })),
       itemUid,
       equipment: { armor: equipment.armor ? { ...equipment.armor } : null, accessory: equipment.accessory ? { ...equipment.accessory } : null },
+      money,
+      shopSecretsTold: [...shopSecretsTold],
     };
   }
   function restore(data) {
@@ -4391,6 +4422,8 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     memberships = new Set(data.memberships || []);
     inventory = (data.inventory || []).map((it) => ({ ...it }));
     itemUid = data.itemUid | 0;
+    money = data.money | 0;
+    shopSecretsTold = new Set(data.shopSecretsTold || []);
     equipment = {
       armor: data.equipment && data.equipment.armor ? { ...data.equipment.armor } : null,
       accessory: data.equipment && data.equipment.accessory ? { ...data.equipment.accessory } : null,
@@ -4410,6 +4443,7 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     get roster() { return roster; },
     get deaths() { return deaths; },
     get history() { return history.slice(); },
+    get money() { return money; },
     serialize,
     restore,
     memberships: () => [...memberships],
@@ -4434,6 +4468,10 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     isCleared,
     startCombat,
     resolveCombat,
+    addMoney,
+    addCoins,
+    tellSecret,
+    revealItem,
   };
 }
 
@@ -5297,8 +5335,233 @@ function createCityLife(city, { seed = 0, names, prose, cityRegister } = {}) {
 return { createCityLife };
 })();
 
+__M["src/engine/shop.js"] = (function () {
+const { mulberry32, hashInt } = __M["src/engine/prng.js"];
+const { normalizeItem } = __M["src/engine/items.js"];
+// M12 shops — seeded-chaotic barter commerce.
+// Pure + deterministic in (world seed, shop/building id, restock epoch, town archetype).
+// Mixed tender: money, food, rest-offering, attention, blood (small HP cost), secrets.
+// A seeded minority of listings are mislabeled; the true item is revealed on use/equip.
+const MISLABEL_CHANCE = 0.20; // ~1 in 5 listings are slightly wrong
+const STOCK_SIZE_MIN = 3;
+const STOCK_SIZE_MAX = 6;
+
+// Tender weights: money is the most common, secrets and blood are rarer.
+const TENDER_WEIGHTS = [
+  { tender: 'money', weight: 40 },
+  { tender: 'food', weight: 22 },
+  { tender: 'rest-offering', weight: 14 },
+  { tender: 'attention', weight: 10 },
+  { tender: 'blood', weight: 8 },
+  { tender: 'secrets', weight: 6 },
+];
+
+function pickWeighted(rng, table) {
+  const total = table.reduce((s, e) => s + e.weight, 0);
+  let roll = rng() * total;
+  for (const e of table) {
+    roll -= e.weight;
+    if (roll <= 0) return e.tender;
+  }
+  return table[table.length - 1].tender;
+}
+
+function derivePriceAmount(tender, rng) {
+  switch (tender) {
+    case 'money': return 2 + Math.floor(rng() * 7); // 2..8 grey coins
+    case 'blood': return 1 + Math.floor(rng() * 3);  // 1..3 hp
+    default: return 1; // item tenders cost one tagged item
+  }
+}
+
+function priceText(price, labels) {
+  if (price.tender === 'money') return `${price.amount} ${price.amount === 1 ? labels.singular : labels.plural}`;
+  if (price.tender === 'blood') return `${price.amount} blood`;
+  return price.tender;
+}
+
+function normalizeSpec(spec) {
+  if (!spec) return null;
+  const rec = { ...spec };
+  if (rec.tags) rec.tags = rec.tags.slice();
+  return normalizeItem(rec);
+}
+
+function createShop(register = {}) {
+  const labels = (register && register.currency) || { singular: '[SEED] grey coin', plural: '[SEED] grey coins' };
+  const refusal = (register && register.refusal) || {};
+  const archetypes = (register && register.archetypes) || {};
+  const fallback = (register && register.fallback) || { stock: [] };
+
+  function stockFor(buildingId, worldSeed, epoch = 0, archetype = 'market') {
+    const seed = hashInt(buildingId | 0, worldSeed ^ 0x5c4a, (epoch | 0) * 0x9e37) >>> 0;
+    const rng = mulberry32(seed || 1);
+    const table = (archetypes[archetype] && archetypes[archetype].stock) || fallback.stock || [];
+    if (!table.length) return [];
+
+    const count = STOCK_SIZE_MIN + Math.floor(rng() * (STOCK_SIZE_MAX - STOCK_SIZE_MIN + 1));
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      const spec = table[Math.floor(rng() * table.length)];
+      let item = normalizeSpec(spec);
+      if (!item) continue;
+
+      const tender = pickWeighted(rng, TENDER_WEIGHTS);
+      const amount = derivePriceAmount(tender, rng);
+      const price = { tender, amount };
+
+      // Mislabel: a seeded minority of listings describe the item slightly wrong.
+      // The true item is preserved; the listing name is swapped with another item from the table.
+      let mislabel = false;
+      let displayName = item.name;
+      if (rng() < MISLABEL_CHANCE && table.length > 1) {
+        let alt = table[Math.floor(rng() * table.length)];
+        let guard = 0;
+        while (alt && alt.name === spec.name && guard++ < 10) alt = table[Math.floor(rng() * table.length)];
+        if (alt && alt.name !== spec.name) {
+          mislabel = true;
+          displayName = alt.name;
+        }
+      }
+
+      // The record given to the player: name is the (possibly wrong) listing.
+      const stockItem = { ...item, name: displayName };
+      // Hidden truth: store the real item record and mislabel flag on a non-enumerable
+      // symbol-ish field? Tests need to inspect it, so use a plain property with a
+      // leading underscore — it rides along with the normalized item.
+      stockItem._truth = {
+        trueName: item.name,
+        trueItem: item,
+        mislabel,
+        price,
+        buildingId: buildingId,
+      };
+      out.push(stockItem);
+    }
+    return out;
+  }
+
+  // Dealer sell offer: 1-3 of your items, each quoted in money. Deterministic in
+  // (buildingId, worldSeed, epoch, inventory length).
+  function makeSellOffer(inventory, buildingId, worldSeed, epoch = 0) {
+    if (!inventory || !inventory.length) return null;
+    const seed = hashInt(buildingId | 0, worldSeed ^ 0x7e11, (epoch | 0) * 0x6d2b) >>> 0;
+    const rng = mulberry32(seed || 1);
+    const count = Math.min(inventory.length, 1 + Math.floor(rng() * 3)); // 1..3
+    const offered = [];
+    const used = new Set();
+    for (let i = 0; i < count; i++) {
+      let idx = Math.floor(rng() * inventory.length);
+      let guard = 0;
+      while (used.has(idx) && guard++ < 10) idx = (idx + 1) % inventory.length;
+      used.add(idx);
+      const item = inventory[idx];
+      const amount = 1 + Math.floor(rng() * 5); // 1..5 grey coins per item
+      offered.push({ item, amount, index: idx });
+    }
+    return offered;
+  }
+
+  // Purchase one stock item. Returns { ok, item?, price?, line?, refusal?, before?, after? }.
+  function buy(stockItem, session) {
+    const truth = stockItem && stockItem._truth;
+    if (!truth) return { ok: false, refusal: refusal.default || '[SEED] that is not for sale' };
+    const price = truth.price;
+    const trueItem = truth.trueItem;
+
+    // Affordance checks.
+    if (price.tender === 'money') {
+      if ((session.money || 0) < price.amount) {
+        return { ok: false, refusal: (refusal.money || '[SEED] the price is ${amount} grey coins; your purse disagrees').replace('${amount}', price.amount) };
+      }
+    } else if (['food', 'rest-offering', 'attention'].includes(price.tender)) {
+      const have = session.items().find((it) => Array.isArray(it.tags) && it.tags.includes(price.tender));
+      if (!have) return { ok: false, refusal: refusal[price.tender] || refusal.default };
+    } else if (price.tender === 'blood') {
+      if ((session.pc.hp || 1) <= price.amount) {
+        return { ok: false, refusal: refusal.blood || refusal.default };
+      }
+    } else if (price.tender === 'secrets') {
+      if (!session.tellSecret || !session.tellSecret(buildingIdFor(stockItem))) {
+        return { ok: false, refusal: refusal.secrets || refusal.default };
+      }
+    }
+
+    // Pay.
+    let beforeHp = null;
+    let afterHp = null;
+    if (price.tender === 'money') {
+      session.addMoney(-price.amount);
+    } else if (['food', 'rest-offering', 'attention'].includes(price.tender)) {
+      const have = session.items().find((it) => Array.isArray(it.tags) && it.tags.includes(price.tender));
+      session.dropItem(have.uid);
+    } else if (price.tender === 'blood') {
+      beforeHp = session.pc.hp;
+      session.pc.hp = Math.max(1, session.pc.hp - price.amount);
+      afterHp = session.pc.hp;
+    }
+
+    // Hand over the item carrying the (possibly wrong) listing name. The true
+    // capabilities are from the true item; the visible name is the listing. The
+    // mislabel flag + trueName ride along for reveal-on-use.
+    const bought = { ...trueItem, name: stockItem.name };
+    delete bought._truth;
+    if (truth.mislabel) {
+      bought.mislabel = true;
+      bought.trueName = truth.trueName;
+    }
+    session.addItem(bought);
+
+    let line = (register.buy_line || '[SEED] you lay down the price and take ${item}').replace('${item}', stripSeed(trueItem.name));
+    if (price.tender === 'blood') {
+      line = (register.blood_buy_line || '[SEED] you pay in blood — ${before}→${after} hp — and take ${item}')
+        .replace('${before}', beforeHp).replace('${after}', afterHp).replace('${item}', stripSeed(trueItem.name));
+    }
+    return { ok: true, item: bought, price, line, before: beforeHp, after: afterHp };
+  }
+
+  // Accept a dealer sell offer. Returns { ok, amount, line }.
+  function sell(offer, session) {
+    if (!offer || !offer.length) return { ok: false };
+    let total = 0;
+    // Drop in reverse index order so splicing doesn't shift remaining targets.
+    const sorted = offer.slice().sort((a, b) => b.index - a.index);
+    const removed = [];
+    for (const o of sorted) {
+      const items = session.items();
+      if (o.index < 0 || o.index >= items.length) continue;
+      const it = items[o.index];
+      if (session.dropItem(it.uid)) {
+        total += o.amount;
+        removed.push(stripSeed(it.name));
+      }
+    }
+    if (total > 0) session.addMoney(total);
+    const itemsStr = removed.length > 1 ? `${removed.slice(0, -1).join(', ')} and ${removed[removed.length - 1]}` : (removed[0] || 'something');
+    const line = (register.sell_line || '[SEED] the dealer counts out ${amount} grey coins for ${item}')
+      .replace('${amount}', total).replace('${item}', itemsStr);
+    return { ok: total > 0, amount: total, line };
+  }
+
+  return { stockFor, makeSellOffer, buy, sell, priceText, MISLABEL_CHANCE, register, labels };
+}
+
+// Recover a stable building id from a stock item's truth metadata.
+function buildingIdFor(stockItem) {
+  return (stockItem && stockItem._truth && stockItem._truth.buildingId) || 'shop';
+}
+
+function stripSeed(s) {
+  return String(s || '').replace(/^\[SEED\]\s*/i, '');
+}
+
+return { createShop };
+})();
+
 __M["src/engine/services.js"] = (function () {
 const { rankIndex } = __M["src/engine/character.js"];
+const { createShop } = __M["src/engine/shop.js"];
+const shopRegister = __DATA["data/register/shop.json"];
 // City services — the placeholder talk hooks behind each building door (M3
 // CITY). Increment 1 opened the doors; this gives each a first interaction:
 //   inn    — take a room; the party rests (heal).
@@ -5318,6 +5581,7 @@ function createServices(cityRegister, deps = {}) {
   const services = (cityRegister && cityRegister.services) || {};
   const effects = (cityRegister && cityRegister.service_effects) || {};
   const prose = deps.prose || null;
+  const shop = deps.shop || createShop(deps.shopRegister || shopRegister);
 
   // interact(building, { session, seed }): run the building's service once and
   // return { service, name, lines, effect } — effects are applied in-line on the
@@ -5386,7 +5650,21 @@ function createServices(cityRegister, deps = {}) {
           lines.push('[SEED] the counter is unattended, permanently');
         }
         break;
-      default: // shop
+      case 'shop':
+        {
+          const epoch = Math.floor((ctx.tick || 0) / 200);
+          const archetype = ctx.archetype || 'market';
+          const stock = session ? shop.stockFor(building.id, ctx.seed || 0, epoch, archetype) : [];
+          const sellOffer = (session && stock.length) ? shop.makeSellOffer(session.items(), building.id, ctx.seed || 0, epoch) : null;
+          effect = 'shop';
+          if (!stock.length) {
+            lines.push((shop.register && shop.register.no_stock) || '[SEED] the shelf is bare');
+          } else {
+            lines.push('[SEED] the shelf holds what the record claims');
+          }
+          return { service: building.service, name, lines, effect, stock, sellOffer, shop, buildingId: building.id };
+        }
+      default:
         lines.push('[SEED] nothing changes hands — the stall wants a password you have not earned');
         break;
     }
@@ -7597,7 +7875,53 @@ function buildBuildingDrawList({
   return L.rows();
 }
 
-return { buildCombatDrawList, buildDeathDrawList, buildJournalDrawList, buildSneakDrawList, buildPartyDrawList, buildBuildingDrawList };
+/**
+ * Build the SHOP interior draw list (M12). A glyph + name band, the greeting,
+ * and numbered stock rows with their chaotic tender price. A message line (buy
+ * feedback / refusal) sits below the stock so the player sees the result.
+ */
+function buildShopDrawList({
+  name = '—',
+  lines = [],
+  stock = [],
+  message = '',
+  money = 0,
+  currencyPlural = 'grey coins',
+  glyph = '',
+  glyphColor = 'dim',
+  width = 416,
+  height = 416,
+} = {}) {
+  const marginX = 18;
+  const colW = width - 2 * marginX;
+  const L = createLayout({ width, height, marginX, marginY: 20, gap: 8 });
+  if (glyph) {
+    L.define('glyph', { lines: 1, lineHeight: 38, size: 32 });
+    const placed = L.push('glyph', glyph, { color: glyphColor, maxWidth: colW });
+    if (placed[0]) {
+      placed[0].x = Math.max(marginX, Math.round((width - textWidth(glyph, 32)) / 2));
+    }
+  }
+  L.define('name', { lines: 2, lineHeight: 24, size: 16 });
+  L.define('body', { lines: 2, lineHeight: 18, size: 12 });
+  L.define('purse', { lines: 1, lineHeight: 16, size: 11 });
+  L.define('stock', { lines: Math.max(1, stock.length), lineHeight: 19, size: 12 });
+  L.define('message', { lines: 2, lineHeight: 18, size: 12 });
+  L.define('hint', { lines: 1, lineHeight: 16, size: 11 });
+  L.push('name', `— ${stripSeed(name)} —`, { color: 'hue', size: 16, maxWidth: colW });
+  for (const l of lines) L.push('body', stripSeed(l), { color: 'dim', size: 12, maxWidth: colW });
+  L.push('purse', `${money} ${stripSeed(currencyPlural)}`, { color: 'faint', size: 11, maxWidth: colW });
+  for (let i = 0; i < stock.length; i++) {
+    const s = stock[i];
+    const row = `[${i + 1}] ${stripSeed(s.name)}  —  ${s.priceText}`;
+    L.push('stock', row, { color: 'dim', size: 12, maxWidth: colW });
+  }
+  if (message) L.push('message', stripSeed(message), { color: 'accent', size: 12, maxWidth: colW });
+  L.push('hint', stock.length ? '[1-6] buy  [S] sell offer  [Esc] leave' : '[Esc] leave', { color: 'faint', size: 11, maxWidth: colW });
+  return L.rows();
+}
+
+return { buildCombatDrawList, buildDeathDrawList, buildJournalDrawList, buildSneakDrawList, buildPartyDrawList, buildBuildingDrawList, buildShopDrawList };
 })();
 
 __M["src/engine/journal.js"] = (function () {
@@ -7792,6 +8116,7 @@ const { createAudio } = __M["src/engine/audio.js"];
 const { assembleCity, createStroll, serviceGlyph, archetypeTexture } = __M["src/engine/city.js"];
 const { createCityLife } = __M["src/engine/citylife.js"];
 const { createServices } = __M["src/engine/services.js"];
+const { createShop } = __M["src/engine/shop.js"];
 const { createPalettes } = __M["src/engine/palette.js"];
 const { hashInt, mulberry32 } = __M["src/engine/prng.js"];
 const { SHADE_LEVELS } = __M["src/engine/tiles.js"];
@@ -7807,7 +8132,7 @@ const { computeFrame, frameDisplay } = __M["src/engine/frame.js"];
 const { createMinimap, exploreCurrent, drawMinimap, featureGlyph } = __M["src/engine/minimap.js"];
 const { createWorldMapState, drawWorldmap } = __M["src/engine/worldmap.js"];
 const { textWidth, ellipsize } = __M["src/engine/layout.js"];
-const { buildCombatDrawList, buildDeathDrawList, buildBuildingDrawList, buildJournalDrawList, buildSneakDrawList, buildPartyDrawList } = __M["src/engine/panels.js"];
+const { buildCombatDrawList, buildDeathDrawList, buildBuildingDrawList, buildShopDrawList, buildJournalDrawList, buildSneakDrawList, buildPartyDrawList } = __M["src/engine/panels.js"];
 const { createJournal } = __M["src/engine/journal.js"];
 const { RANKS } = __M["src/engine/character.js"];
 const { dirFor, actionFor } = __M["src/engine/bindings.js"];
@@ -7824,6 +8149,7 @@ const chargenData = __DATA["data/register/chargen.json"];
 const lootData = __DATA["data/register/loot.json"];
 const combatRegister = __DATA["data/register/combat.json"];
 const cityRegister = __DATA["data/register/city.json"];
+const shopRegister = __DATA["data/register/shop.json"];
 const palettesData = __DATA["data/palettes.json"];
 // Browser entry point. Boots the overworld: streams chunks around the party,
 // renders a monochrome viewport to canvas, moves on arrow/WASD keys. All DOM
@@ -7881,7 +8207,8 @@ function createGame(config = master) {
   const biomes = createBiomes(biomeData, { bestiary, encounters, tileArt: createTileArt() });
   const chargen = createChargen(chargenData, { names }); // A10: dealt name + face randomize
   const loot = createLoot(lootData); // Part B: kills drop salvage/trinkets; caches yield relics
-  const services = createServices(cityRegister, { prose });
+  const shop = createShop(shopRegister); // M12: seeded-chaotic barter commerce
+  const services = createServices(cityRegister, { prose, shop });
   const social = createSocial({ prose }); // F1/F2 minimal talk + barter
   // The run session: the current PC + roster, permadeath, and world persistence
   // (cleared sites survive a death). Seeded off the world so a world reproduces.
@@ -8143,11 +8470,12 @@ function createGame(config = master) {
   }
 
   // Run a building's service interaction against the live session (rest a party,
-  // buy a rumor, give the word at a lodge). Seeded off the building + world. The
-  // town's per-building identity line is prepended so interiors read distinctly.
+  // buy a rumor, give the word at a lodge, or shop). Seeded off the building + world.
+  // The town's per-building identity line is prepended so interiors read distinctly.
   function enterBuilding(building, cityCtx = null) {
     const seed = hashInt(building.index | 0, 0x5e2, world.seed ^ 0x5e12ce);
-    const res = services.interact(building, { session, seed });
+    const archetype = cityCtx && cityCtx.city ? cityCtx.city.archetype : 'market';
+    const res = services.interact(building, { session, seed, tick, archetype });
     const ident = cityCtx && cityCtx.life ? cityCtx.life.identity(building) : null;
     if (ident) {
       res.name = `${res.name} — kept by ${ident.proprietor}`;
@@ -8195,7 +8523,7 @@ function createGame(config = master) {
   }
 
   return {
-    world, party, prose, names, dungeonKit, bestiary, encounters, biomes, chargen, loot, session, services, journal, wanderers, events, logEvent, exposure, bumpTick, get tick() { return tick; },
+    world, party, prose, names, dungeonKit, bestiary, encounters, biomes, chargen, loot, session, services, shop, journal, wanderers, events, logEvent, exposure, bumpTick, get tick() { return tick; },
     start, startTown, START_SAFE_RADIUS, START_CACHE_COUNT, nearStart, starterCaches: () => starterCaches.map((c) => ({ ...c })), densityFor,
     refreshCapacity, milestoneCapacity, social, talkPointers,
     describeSite, describeBiomeGround, overworldStep, enterSite, enterCity, describeBuilding, enterBuilding, describeRoom, stepEncounter, save, load,
@@ -8215,7 +8543,7 @@ function boot() {
   const game = createGame();
   PALETTE = createPalettes(palettesData);
   SCHEME = PALETTE.defaultId;
-  const { world, party, session, journal, wanderers, biomes, loot, events, logEvent, refreshCapacity, social, talkPointers, describeSite, describeBiomeGround, overworldStep, enterSite, enterCity, describeBuilding, enterBuilding, describeRoom, stepEncounter } = game;
+  const { world, party, session, journal, wanderers, biomes, loot, events, logEvent, refreshCapacity, social, talkPointers, describeSite, describeBiomeGround, overworldStep, enterSite, enterCity, describeBuilding, enterBuilding, describeRoom, stepEncounter, shop } = game;
   const combatProse = createCombatProse(combatRegister); // M11: the in-voice combat surface
   // Audio (Part B): code-synthesised ambient bed + SFX. Only wires a real context in
   // a browser that provides one; headless/tests get a silent no-op. Ambient starts
@@ -8281,6 +8609,8 @@ function boot() {
   let combatNote = '';
   let beatPanel = null; // C1/C2: a brief framed kill/join beat, held over the scene until the next key
   let barterState = null; // F2: an open one-exchange barter offer {subject, want, offer, line}
+  let shopState = null; // M12: active shop interior { stock, sellOffer, message, buildingId }
+  let sellOverlay = null; // M12: a dealer sell offer overlay { offer[], total }
   let deathInfo = null;
   // Visible dungeon enemy (M8 §5): the being blocking the current cell while the
   // confront/sneak prompt is up; `pendingDungeonEnemy` is cleared on a won fight.
@@ -8899,6 +9229,31 @@ function boot() {
     owNote = stripSeed(res.line);
     render(); return;
   }
+  // M12 — the dealer sell-offer overlay: 1-3 of your items quoted in grey coins.
+  function paintSellOffer() {
+    if (!sellOverlay) return;
+    ctx.save();
+    const w = Math.min(CANVAS_W - 40, 420), h = 128 + Math.min(3, sellOverlay.offer.length) * 22;
+    const x = Math.round((canvas.width - w) / 2), y = Math.round(canvas.height / 2 - h / 2);
+    ctx.globalAlpha = 0.95; ctx.fillStyle = shadeColor(0);
+    ctx.fillRect(x, y, w, h);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = shadeColor(5); ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = shadeColor(6); ctx.font = '15px monospace';
+    ctx.fillText('— the dealer offers —', x + w / 2, y + 26);
+    ctx.fillStyle = shadeColor(5); ctx.font = '13px monospace';
+    const itemsStr = sellOverlay.offer.map((o) => `${stripSeed(o.item.name)} (${o.amount})`).join(', ');
+    const fit = stripSeed(shopRegister.sell_offer_line || '[SEED] the dealer will give ${amount} grey coins for ${items}')
+      .replace('${amount}', sellOverlay.total).replace('${items}', itemsStr);
+    ctx.fillText(fit, x + w / 2, y + 54);
+    ctx.fillStyle = shadeColor(4); ctx.font = '12px monospace';
+    ctx.fillText('[Enter] sell    [Esc] keep your things', x + w / 2, y + 80 + Math.min(3, sellOverlay.offer.length) * 22);
+    ctx.textAlign = 'left';
+    ctx.restore();
+  }
+
   // F2 — the one-exchange barter overlay: the being wants one tag, offers one item.
   function paintBarter() {
     if (!barterState) return;
@@ -9378,15 +9733,33 @@ function boot() {
 
   function renderBuilding() {
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-    // Interiors stay TEXT (operator lock) — a framed, tested greeting panel. The
-    // per-service glyph lives in its own top band inside the draw list so it can
-    // never overprint the wrapped name/prose (defect sweep 2026-08-04).
-    paintRows(buildBuildingDrawList({
-      name: building.name,
-      lines: building.lines,
-      glyph: serviceGlyph(building.service),
-      glyphColor: shadeColor(5),
-    }));
+    // M12 shop interior: numbered stock rows with tender prices + a message line.
+    if (building && building.service === 'shop' && shopState) {
+      const stockRows = (shopState.stock || []).map((s) => ({
+        name: s.name,
+        priceText: shop.priceText(s._truth.price, shop.labels),
+      }));
+      paintRows(buildShopDrawList({
+        name: building.name,
+        lines: building.lines,
+        stock: stockRows,
+        message: shopState.message || '',
+        money: session.money,
+        currencyPlural: shop.labels.plural || 'grey coins',
+        glyph: serviceGlyph('shop'),
+        glyphColor: shadeColor(5),
+      }));
+    } else {
+      // Interiors stay TEXT (operator lock) — a framed, tested greeting panel. The
+      // per-service glyph lives in its own top band inside the draw list so it can
+      // never overprint the wrapped name/prose (defect sweep 2026-08-04).
+      paintRows(buildBuildingDrawList({
+        name: building.name,
+        lines: building.lines,
+        glyph: serviceGlyph(building.service),
+        glyphColor: shadeColor(5),
+      }));
+    }
     sceneStatus = `${stripSeed(city.name)} · ${stripSeed(building.name || building.service)}`;
     status.textContent = stripSeed(sceneStatus);
   }
@@ -9578,6 +9951,7 @@ function boot() {
     if (crt) crtPass();
     if (beatPanel) paintBeat();
     if (barterState) paintBarter();
+    if (sellOverlay) paintSellOffer();
     paintToast();
     if (showInv) paintInventory();
     if (showParty) paintParty();
@@ -9828,7 +10202,48 @@ function boot() {
     }
     if (mode === 'building') {
       e.preventDefault();
-      if (a === 'cancel' || a === 'confirm') { building = null; mode = 'city'; render(); }
+      // Sell-offer overlay captures input first.
+      if (sellOverlay) {
+        if (a === 'confirm') {
+          const res = shop.sell(sellOverlay.offer, session);
+          shopState.message = res.ok ? res.line : (shopRegister.sell_empty || '[SEED] you have nothing the dealer wants to carry away');
+          sellOverlay = null;
+          logEvent('shop', { mode: 'building', outcome: res.ok ? `sold for ${res.amount}` : 'refused' });
+        } else if (a === 'cancel') {
+          sellOverlay = null;
+          shopState.message = '';
+        }
+        render();
+        return;
+      }
+      if (a === 'cancel' || a === 'confirm') { building = null; shopState = null; mode = 'city'; render(); return; }
+      // [S] opens the dealer's offer for 1-3 of your items.
+      if (e.key === 's' || e.key === 'S') {
+        const offer = shopState.sellOffer || shop.makeSellOffer(session.items(), shopState.buildingId, world.seed, Math.floor(tick / 200));
+        if (offer && offer.length) {
+          const total = offer.reduce((s, o) => s + o.amount, 0);
+          sellOverlay = { offer, total };
+        } else {
+          shopState.message = shopRegister.sell_empty || '[SEED] you have nothing the dealer wants to carry away';
+        }
+        render();
+        return;
+      }
+      // Number keys buy a stock item by index.
+      if (shopState && shopState.stock.length && /^[1-9]$/.test(e.key)) {
+        const idx = Number(e.key) - 1;
+        if (idx < shopState.stock.length) {
+          const res = shop.buy(shopState.stock[idx], session);
+          shopState.message = res.ok ? res.line : res.refusal;
+          if (res.ok) {
+            // Remove the bought item from the live stock so it can't be rebought.
+            shopState.stock.splice(idx, 1);
+            logEvent('shop', { mode: 'building', outcome: `bought ${stripSeed(res.item.name)}` });
+          }
+        }
+        render();
+        return;
+      }
       return;
     }
     if (mode === 'city') {
@@ -9843,6 +10258,11 @@ function boot() {
         building = enterBuilding(r.building, city);
         logEvent('building', { mode: 'city', outcome: `${building.service}: ${building.effect || 'talk'}` });
         if (building.effect === 'joined') refreshCapacity(); // a new ladder rung (E6)
+        if (building.service === 'shop') {
+          shopState = { stock: building.stock || [], sellOffer: building.sellOffer || null, message: '', buildingId: building.buildingId || r.building.id };
+        } else {
+          shopState = null;
+        }
         mode = 'building';
       }
       render();
