@@ -1047,7 +1047,25 @@ function assembleDungeon(kit, opts = {}) {
   const mouth = { N: [mcx * seg + mid, mcy * seg], S: [mcx * seg + mid, mcy * seg + seg - 1], W: [mcx * seg, mcy * seg + mid], E: [mcx * seg + seg - 1, mcy * seg + mid] }[mdir];
   const entrance = { x: mouth[0], y: mouth[1], dir: mdir };
   const inward = OPP[mdir];
-  const start = { x: entrance.x + VEC[inward].dx, y: entrance.y + VEC[inward].dy, facing: inward };
+  const iv = VEC[inward];
+
+  // The prefab's middle may be a pillar or corner, so the tile directly inward
+  // from the mouth can be a wall. Search the entrance cell for a floor tile just
+  // inside the mouth that also has floor ahead, so the player can always step
+  // forward on entry. Deterministic: closest to mouth midpoint, tiebreak y then x.
+  const candidates = [];
+  const pushCandidate = (x, y) => {
+    if (floorAt(x, y) && floorAt(x + iv.dx, y + iv.dy)) {
+      candidates.push({ x, y, d: Math.abs(x - mouth[0]) + Math.abs(y - mouth[1]) });
+    }
+  };
+  if (mdir === 'N') for (let x = mcx * seg; x < mcx * seg + seg; x++) pushCandidate(x, mcy * seg + 1);
+  else if (mdir === 'S') for (let x = mcx * seg; x < mcx * seg + seg; x++) pushCandidate(x, mcy * seg + seg - 2);
+  else if (mdir === 'W') for (let y = mcy * seg; y < mcy * seg + seg; y++) pushCandidate(mcx * seg + 1, y);
+  else for (let y = mcy * seg; y < mcy * seg + seg; y++) pushCandidate(mcx * seg + seg - 2, y);
+  candidates.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+  const startTile = candidates[0] || { x: entrance.x + iv.dx, y: entrance.y + iv.dy };
+  const start = { x: startTile.x, y: startTile.y, facing: inward };
 
   return {
     seed, cells: M, segmentSize: seg, width, height,
@@ -7211,6 +7229,9 @@ function drawWorldmap(ctx, {
       if (l.x < data.bounds.minX || l.x > data.bounds.maxX || l.y < data.bounds.minY || l.y > data.bounds.maxY) continue;
       const lx = x + (l.x - data.bounds.minX) * cell + cell + 2;
       const ly = y + (l.y - data.bounds.minY) * cell + cell / 2 + 4;
+      // Clamp/skip like the panel legend: a label must fit inside the map card so
+      // it can never bleed into the HUD region above or below the worldmap.
+      if (ly - 11 < y + 2 || ly + 3 > y + mh - 2) continue;
       ctx.fillStyle = shadeColor(0);
       const w = ctx.measureText(l.text).width + 4;
       ctx.fillRect(lx - 2, ly - 11, w, 14);
@@ -7227,7 +7248,7 @@ return { worldKey, createWorldMapState, gatherWorldmap, siteGlyph, drawWorldmap,
 })();
 
 __M["src/engine/panels.js"] = (function () {
-const { createLayout, stripSeed, bustBoxFor, bustColW, wrapToWidth } = __M["src/engine/layout.js"];
+const { createLayout, stripSeed, bustBoxFor, bustColW, wrapToWidth, textWidth } = __M["src/engine/layout.js"];
 // M6 INTERFACE — the full-screen text modes (encounter, death, building) as
 // headless, testable draw lists on the shared stacked-region planner. Same
 // vocabulary as the title/creation screens: a hue title band, dim labels, faint
@@ -7548,6 +7569,8 @@ function buildBuildingDrawList({
   lines = [],
   width = 416,
   height = 416,
+  glyph = '',
+  glyphColor = 'dim',
 } = {}) {
   // A5: apply the same pre-wrap discipline the bust panels use — every line wraps to
   // the text column (colW) and no string is ever ellipsis-clipped. The name band was
@@ -7556,6 +7579,16 @@ function buildBuildingDrawList({
   const marginX = 20;
   const colW = width - 2 * marginX;
   const L = createLayout({ width, height, marginX, marginY: 24, gap: 12 });
+  // F3: the per-service glyph gets its own top band so it can never overprint the
+  // wrapped name or body prose. When the shell passes a glyph it is centered; when
+  // it is absent the layout falls back to the original text-only greeting.
+  if (glyph) {
+    L.define('glyph', { lines: 1, lineHeight: 44, size: 36 });
+    const placed = L.push('glyph', glyph, { color: glyphColor, maxWidth: colW });
+    if (placed[0]) {
+      placed[0].x = Math.max(marginX, Math.round((width - textWidth(glyph, 36)) / 2));
+    }
+  }
   L.define('name', { lines: 3, lineHeight: 26, size: 18 }); // wraps a long proprietor name, never ellipsized
   // Reserve a generous body budget; wrapped service prose is short.
   L.define('body', { lines: 10, lineHeight: 22, size: 14 });
@@ -8420,40 +8453,44 @@ function boot() {
     ctx.restore();
     const rows = buildPanel({ cue: HUD_CUE[mode] || '', groups: panelGroups(), width: p.w, height: p.h });
     ctx.save(); ctx.translate(p.x, p.y); paintRows(rows); ctx.restore();
-    // D2: a compact PORTRAIT ROW under the vitals — the PC bust then each follower's
-    // (busts already exist). They enlarge on the party surface (D3). Bounded so it
-    // never runs into the bottom legend.
+    // M10 A5 + defect sweep 2026-08-04: the legend is bottom-anchored and drawn
+    // FIRST so it can never be overlapped by the portrait row. The portrait row
+    // then fills the remaining space above the legend. The legend is clamped to
+    // stay below a reserved portrait band so it can never bleed into the HUD groups.
     const contentBottom = rows.reduce((m, r) => Math.max(m, r.bandBottom || 0), 0);
-    paintPortraitRow(p, p.y + contentBottom + 8);
-    // M10 A5: a persistent MAP LEGEND anchored to the panel's bottom in the nav
-    // modes — small tile-art swatches naming the entity glyph classes and terrain
-    // passability, so "what am I looking at / can I walk there" is answerable at a
-    // glance (Ray's visibility-floor concern). Bottom-anchored so it never collides
-    // with the top-anchored HUD groups.
-    if (mode === 'overworld' || mode === 'city' || mode === 'dungeon') paintLegend(p);
+    const MIN_PORTRAIT_BAND = 30;
+    const legendTop = (mode === 'overworld' || mode === 'city' || mode === 'dungeon')
+      ? paintLegend(p, contentBottom + MIN_PORTRAIT_BAND + 4)
+      : p.y + p.h;
+    // D2: compact portrait strip above the legend; skipped if it would collide.
+    paintPortraitRow(p, p.y + contentBottom + 8, legendTop - 4);
   }
 
   // D2 — the party portrait strip: the PC bust then each follower's, small tiles that
   // wrap within the panel. Skipped if it would collide with the bottom legend band.
-  function paintPortraitRow(p, topY) {
-    const pc = session.pc; if (!pc) return;
+  function paintPortraitRow(p, topY, floorY) {
+    const pc = session.pc; if (!pc) return topY;
     const size = 22, gap = 5, padX = 10;
-    // Keep clear of the bottom legend (drawn in every nav mode) or the panel bottom.
+    // Keep clear of the bottom legend (estimate) or the panel bottom. The caller
+    // can pass an explicit floor; otherwise we reserve the estimated legend band.
     const navMode = mode === 'overworld' || mode === 'city' || mode === 'dungeon';
-    const floor = p.y + p.h - (navMode ? legendHeight(mode) + 12 : 24);
-    if (topY + size > floor) return;
+    const floor = floorY != null ? floorY : p.y + p.h - (navMode ? legendHeight(mode) + 12 : 24);
+    if (topY + size > floor) return topY;
     ctx.save();
     ctx.fillStyle = shadeColor(4); ctx.font = '11px monospace';
     ctx.fillText('— party —', p.x + padX, topY - 2);
     let x = p.x + padX, y = topY + 6;
+    let bottom = topY + size;
     const busts = [pc.portrait || 'HERO', ...session.roster.followers.map((f) => bustArtId(f.id))];
     for (const id of busts) {
       if (x + size > p.x + p.w - padX) { x = p.x + padX; y += size + gap; }
-      if (y + size > floor) { ctx.fillStyle = shadeColor(4); ctx.fillText('…', x, y + size - 4); break; }
+      if (y + size > floor) { ctx.fillStyle = shadeColor(4); ctx.fillText('…', x, y + size - 4); bottom = y + size; break; }
       drawBust(id, x, y, size);
+      bottom = y + size;
       x += size + gap;
     }
     ctx.restore();
+    return bottom;
   }
 
   // The legend items for a mode. Each mode names only what it actually shows;
@@ -8545,18 +8582,19 @@ function boot() {
     }
     return base;
   }
-  const LEGEND_HEAD = 18, LEGEND_LH = 18;
+  const LEGEND_HEAD = 14, LEGEND_LH = 14;
   function legendHeight(mode) { return LEGEND_HEAD + legendItemsFor(mode).length * LEGEND_LH + 8; }
 
   // Draw the bottom-anchored legend inside panel rect `p`. Each row is a 14px
   // swatch (real tile/entity art or a small drawn mark) + a short label.
-  function paintLegend(p) {
+  function paintLegend(p, topLimit) {
     const items = legendItemsFor(mode);
     const sw = 14, lh = LEGEND_LH, padX = 10;
-    const headH = 18;
+    const headH = LEGEND_HEAD;
     const blockH = headH + items.length * lh + 8;
     let y = p.y + p.h - blockH;
-    if (y < p.y + 4) return; // panel too short — skip rather than overlap
+    const minY = topLimit != null ? topLimit : p.y + 4;
+    if (y < minY) return p.y + p.h; // panel too short / would overlap HUD — skip rather than bleed
     ctx.save();
     // faint divider above the legend
     ctx.strokeStyle = shadeColor(2); ctx.lineWidth = 1;
@@ -9310,11 +9348,15 @@ function boot() {
         drawTile(ctx, TILE_ART.get(art), ox + x * t, oy + y * t, t, shadeColor, tileDither(x, y, texSeed));
       }
     }
-    // F3: a per-service glyph on each door, so a door reads as its trade at a glance.
+    // F3: a per-service glyph floating above each door, so the trade is readable
+    // without obscuring the door art. The glyph sits in the tile directly above
+    // the door; every building type uses the same marker, at both zoom levels.
     ctx.save();
     ctx.fillStyle = shadeColor(6); ctx.font = `${Math.max(8, Math.floor(t * 0.7))}px monospace`; ctx.textAlign = 'center';
     for (const b of c.buildings) {
-      ctx.fillText(serviceGlyph(b.service), ox + b.door.x * t + t / 2, oy + b.door.y * t + t * 0.75);
+      const gx = ox + b.door.x * t + t / 2;
+      const gy = oy + (b.door.y - 1) * t + t * 0.85;
+      ctx.fillText(serviceGlyph(b.service), gx, gy);
     }
     ctx.textAlign = 'left'; ctx.restore();
     // Citizens (M8 §5): named townsfolk standing in the streets. Drawn as the NPC
@@ -9336,14 +9378,15 @@ function boot() {
 
   function renderBuilding() {
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-    // F3: a per-service silhouette header — the service glyph, large, at the top, so
-    // an inn and a shrine read as different interiors even though both are text.
-    ctx.save();
-    ctx.fillStyle = shadeColor(5); ctx.font = '40px monospace'; ctx.textAlign = 'center';
-    ctx.fillText(serviceGlyph(building.service), CANVAS_W / 2, 40);
-    ctx.textAlign = 'left'; ctx.restore();
-    // Interiors stay TEXT (operator lock) — a framed, tested greeting panel.
-    paintRows(buildBuildingDrawList({ name: building.name, lines: building.lines }));
+    // Interiors stay TEXT (operator lock) — a framed, tested greeting panel. The
+    // per-service glyph lives in its own top band inside the draw list so it can
+    // never overprint the wrapped name/prose (defect sweep 2026-08-04).
+    paintRows(buildBuildingDrawList({
+      name: building.name,
+      lines: building.lines,
+      glyph: serviceGlyph(building.service),
+      glyphColor: shadeColor(5),
+    }));
     sceneStatus = `${stripSeed(city.name)} · ${stripSeed(building.name || building.service)}`;
     status.textContent = stripSeed(sceneStatus);
   }
