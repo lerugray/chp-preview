@@ -42,6 +42,7 @@ __DATA["data/world/master.json"] = {"seed":2323,"chunkSize":16,"streamRadius":1,
 __DATA["data/world/biomes.json"] = {"_note":"[SEED] M9 BIOMES (DIRECTIONS-2026-08-02-BIOMES) — guaranteed areas present in EVERY run, alongside the procedural material. Placement is ABSOLUTE world coords (the same model as sites) so a given world always reads the same; each biome is a chebyshev square region (center +/- radius) and regions MUST NOT overlap (the engine validates this by construction). Four identity channels wire off these defs: terrain `dress` ({ baseTileId: artId } — art added M9 inc2), monster/NPC pool `wanderers` + encounter `table`, and the vibe pair `weirdness` + `register` (the dominant register the prose engine leans on in-biome). The Chapel Perilous sits inside `perilous-verge` and keeps its full-collision pin. Player-facing biome flavor is generated prose ([SEED] at output); the discrete event fragments live in data/register/biomes.json.","biomes":[{"id":"perilous-verge","name":"[SEED] The Perilous Verge","blurb":"[SEED] the unquiet ground that leans toward the Chapel","center":{"x":8,"y":6},"radius":2,"weirdness":0.95,"register":"conspiratorial","wanderers":["hollow-pilgrim","discordian-monk"],"table":"biome_perilous_verge","dress":{"GRASS":"VERGE_GROUND","SAND":"VERGE_GROUND"}},{"id":"pine-barrens","name":"[SEED] The Pine Barrens","blurb":"[SEED] black conifers over rattling knoll-rock","center":{"x":20,"y":2},"radius":3,"weirdness":0.55,"register":"ominous","wanderers":["law-of-fives-hound","hollow-pilgrim","pine-warden"],"table":"biome_pine_barrens","dress":{"FOREST":"PINE_BARRENS","GRASS":"PINE_FLOOR"}},{"id":"salt-flats","name":"[SEED] The Salt Flats","blurb":"[SEED] a bleached pan surveyed to no conclusion","center":{"x":4,"y":18},"radius":3,"weirdness":0.2,"register":"clinical","wanderers":["carrion-crow","hollow-pilgrim","salt-preacher"],"table":"biome_salt_flats","dress":{"GRASS":"SALT_PAN","SAND":"SALT_CRUST"}},{"id":"drowned-fen","name":"[SEED] The Drowned Fen","blurb":"[SEED] reed-water that keeps its own filing system","center":{"x":11,"y":16},"radius":3,"weirdness":0.7,"register":"conspiratorial","wanderers":["carrion-crow","discordian-monk","fen-lantern"],"table":"biome_drowned_fen","dress":{"GRASS":"FEN_REED","SAND":"FEN_MUD","WATER":"FEN_POOL"}}]};
 __DATA["data/register/biomes.json"] = {"_note":"[SEED] M9 biome ambient-event fragments (events channel). Short subject phrases the prose engine wraps with a generated, register-weighted event tail (biome weirdness + register). Every fragment is [SEED]; the composed output is [SEED] too — Ray's voice pass replaces the wording, the event engine stays. Keyed by biome id.","events":{"perilous-verge":["[SEED] the ground disagrees with your feet","[SEED] a door stands here with no wall around it","[SEED] the fnords thicken until you can almost read them","[SEED] your shadow arrives a moment before you do","[SEED] a bell you cannot see is rung once, apologetically"],"pine-barrens":["[SEED] the pines close the path quietly behind you","[SEED] something in the dark counts your steps in fives","[SEED] resin holds an old scream very still","[SEED] a knoll-stone settles as though it had been listening","[SEED] the needles underfoot spell nothing you will admit to reading"],"salt-flats":["[SEED] the pan records your passage in a thin line of salt","[SEED] a survey stake marks nothing here, precisely","[SEED] the heat bends the horizon into a standing figure","[SEED] the glare completes its report and files you under it","[SEED] a wind crosses the flat carrying the smell of old paper"],"drowned-fen":["[SEED] the reeds pass a folded note between them","[SEED] a bell rings once, underwater, and is corrected","[SEED] the water keeps its own filing system and consults it","[SEED] something surfaces, reconsiders the whole affair, and sinks","[SEED] your reflection lingers a beat after you move on"]}};
 __DATA["data/register/system.json"] = {"title":"[SEED] CHAPEL PERILOUS","subtitle":"[SEED] a recovered operations manual","boot":"[SEED] The map is not the territory. Neither, it turns out, is the territory.","prompt_enter_site":"[SEED] A door where the map insists there is none. Enter?","prompt_exit_site":"[SEED] Arrows crawl; Esc returns you to the surface, if it is still there.","npc_greetings":["[SEED] nods as if you had an appointment, and walks on.","[SEED] asks the time, then answers it themselves. Wrongly.","[SEED] presses a leaflet into your hand. It is blank on both sides.","[SEED] mistakes you for someone else, and is relieved to be wrong.","[SEED] mutters a number under their breath and keeps walking.","[SEED] tips a hat that isn't there and is gone before you answer."],"beast_note":"[SEED] blocks the road — no words for this one.","onterrain":{"DEEP":"[SEED] Deep water. It does not want you.","WATER":"[SEED] Shallows. Still not a road.","SAND":"[SEED] Sand. Someone raked a 23 into it and left.","GRASS":"[SEED] Grass. Ordinary, which is the suspicious part.","FOREST":"[SEED] Trees close ranks behind you.","HILL":"[SEED] High ground. The pattern is easier to see from here, or worse.","MOUNT":"[SEED] The peak refuses passage. Fnord."},"onblocked":{"DEEP":["[SEED] The deep water declines your application to cross it.","[SEED] You step toward the dark water; the dark water steps back. Net zero.","[SEED] Below the surface, something keeps very still. You keep to the shore."],"WATER":["[SEED] The shallows soak your boots and refuse the rest of you.","[SEED] Reed and standing water. Not a road, whatever the map alleges.","[SEED] Your foot finds mud where it wanted ground. You reconsider."],"MOUNT":["[SEED] The peak refuses passage. Fnord.","[SEED] Stone the size of an argument. You lose the argument.","[SEED] The ridge is not interested in a shortcut today."],"default":["[SEED] Something declines to let you pass here.","[SEED] The way is shut, in the ordinary, unremarkable manner of shut ways.","[SEED] You bump the edge of the possible and step back onto it."]}};
+__DATA["data/register/sites.json"] = {"dungeon":["[SEED] the %s Chapel","[SEED] the %s Hollow","[SEED] the %s Threshold","[SEED] Waystation %s","[SEED] the %s Gate"],"city":["[SEED] the %s Hive","[SEED] %s Town","[SEED] %s Station"]};
 __DATA["data/register/pools.json"] = {"_note":"[SEED] Word pools ported from Veridian Contraption's prose_gen.rs (Ray's own game; clean-room applies to Cyclopean only). Fragments, not final utterances — the prose engine composes them and marks its output [SEED] until the operator's voice pass. Direction: Illuminatus!/RAW/Discordiana via the collision of five registers.","registers":["clinical","lyrical","ominous","conspiratorial","bureaucratic"],"verbs":{"bureaucratic":["filed","disputed","remanded","indicated","noted","acknowledged","tabled","deferred","classified","cross-referenced","stamped","countersigned","amended","appended","logged","archived","processed","ratified","formalized"],"clinical":["observed","documented","catalogued","recorded","measured","classified","assessed","registered","indexed","annotated","enumerated","tabulated","quantified","surveyed","logged"],"lyrical":["held","unfolded","gathered","received","absorbed","noted","traced","folded","carried","preserved","recorded","offered","set down","kept","composed"],"ominous":["sealed","annulled","revoked","buried","erased","destroyed","rescinded","condemned","stricken","voided","foreclosed","terminated","withdrawn","burned","obliterated"],"conspiratorial":["intercepted","concealed","redirected","encrypted","falsified","redacted","implicated","surveilled","compromised","rerouted","classified","leaked","suppressed","obscured"]},"nouns":{"bureaucratic":["filing","counter-filing","tribunal","committee","subcommittee","provisional review","formal notation","memorandum","register","ledger entry","supplementary docket","notice of intent","petition","procedural review","brief","disposition","writ","preliminary finding"],"clinical":["field report","specimen report","field notation","ledger entry","survey","classification record","classification","specimen","sample","survey record","catalogue entry","preliminary finding","case file","taxonomic summary","diagnostic summary"],"lyrical":["notation","fragment","remnant","record","account","impression","passage","recollection","observation","margin note","inscription","remark","entry","gesture","detail"],"ominous":["decree","edict","record","judgment","ledger","entry","account","notice","warning","declaration","testament","document","writ","pronouncement","covenant"],"conspiratorial":["dossier","dead drop","cipher","cell","communiqué","cover file","safe house","handler","front organization","surveillance report","sealed file","contact","back channel","cutout","register","filing","ledger entry","memorandum","notice","record","committee","brief"]},"temporal_hedges":["in due course","pending review","subject to revision","contingent upon further inquiry","without prejudice","at some future date to be determined","upon completion of the relevant paperwork","when circumstances permit","at the discretion of the office","following the customary delays"],"causes":{"mundane":["routine factors","natural causes","expected developments","ordinary circumstances","unremarkable conditions","the usual administrative processes","seasonal pressures"],"absurdist":["a metaphysical irregularity","an unresolved taxonomic dispute","numerous procedural objections","a clerical error of uncertain origin","the continued existence of the previous filing","an unpaid obligation dating to the previous era","a boundary dispute that has since been resolved but not acknowledged","the unauthorized relocation of a surveyor's benchmark","a prophecy that was officially retracted but not forgotten","the spontaneous reclassification of adjacent terrain","an audit that discovered more entries than there were things to audit","a notarized complaint about the process of notarizing complaints","the discovery that the relevant form had been printed in a language not yet invented","a census that counted the same individual three times under different headings","the physical relocation of a building that the records insist has not moved","a jurisdictional overlap that assigned two offices authority over the same void","the retirement of the only person who understood the filing system","a calendar dispute that placed the same day in two different weeks"],"impossible":["the retroactive non-occurrence of the event in question","the discovery that the relevant location had been elsewhere at the time","a weight discrepancy caused by the temporary absence of gravity in the filing room","the formal reclassification of time as 'non-sequential' in the affected district","the refusal of the river to continue flowing in the agreed-upon direction","a surveyor's report indicating that the territory in question had declined to exist","the observation that two buildings had exchanged positions without documentation","the conclusion that the debt in question predated the existence of the debtor","a geological fault that the arbitration board found to be acting in bad faith","the determination that the document had been signed before it was written","an accounting error caused by the number seven temporarily meaning something else","the discovery that the meeting had occurred in a room that the building does not contain"]},"physical_loot":["document","specimen","ledger","artifact","curiosity","sealed envelope","fragment","relic","vial","bundle of papers","tarnished instrument","stone tablet","rolled parchment","corroded key","bone implement","glass vessel"],"neutral_verbs":["noted","recorded","acknowledged","logged","filed","registered","processed","documented","catalogued","entered"]};
 __DATA["data/register/phonemes.json"] = [{"name_flavor":"Guttural — short, consonant-heavy","onset":["k","g","d","dr","gr","kr","b","br","t","th","wh","tr"],"nucleus":["e","u","a","o","i"],"coda":["lm","rr","cht","ck","rk","nt","st","lk","sk","rd","ft","ng","ld","rg"],"syllable_patterns":["CVC","CVC","CVC"],"settlement_suffixes":["holm","keep","burg","mark","stead","crag","gard","fell"],"compound":false},{"name_flavor":"Sibilant — longer, vowel-rich","onset":["s","sh","v","sv","th","sl","z","r","l",""],"nucleus":["ee","aa","i","e","a","o","ai","oo","u"],"coda":["th","ss","sh","n","r","l","s","nd","ll"],"syllable_patterns":["CVC","CV","VC","V"],"settlement_suffixes":["essa","anis","issi","een","aal","oth","ais","ira"],"compound":false},{"name_flavor":"Nasal — rhythmic, resonant","onset":["m","n","nn","gn","","g","b","d"],"nucleus":["e","a","o","i","u"],"coda":["n","m","ng","nn","nk","nd","nt","ll","rn","mm","nv","r"],"syllable_patterns":["CVC","VC","CVC"],"settlement_suffixes":["mond","nim","enn","ang","ummer","inn","annen","ond"],"compound":false},{"name_flavor":"Compound — hyphenated, diplomatic","onset":["p","d","k","t","b","w","kr","pl","tr",""],"nucleus":["e","i","a","o","u"],"coda":["lm","rr","ck","n","st","th","lk","v","ld"],"syllable_patterns":["CVC","CV","VC"],"settlement_suffixes":[],"compound":true}];
 __DATA["data/dungeon/kit.json"] = {"_note":"[SEED] authored segment tile-kit; #=wall .=floor. Interiors are placeholder geometry, not final level design.","segmentSize":5,"wall":"#","floor":".","prefabs":[{"id":"cap-N","exits":["N"],"rows":["##.##","#...#","#...#","#...#","#####"]},{"id":"cap-E","exits":["E"],"rows":["#####","#...#","#....","#...#","#####"]},{"id":"corner-NE","exits":["N","E"],"rows":["##.##","#...#","#....","#...#","#####"]},{"id":"cap-S","exits":["S"],"rows":["#####","#...#","#...#","#...#","##.##"]},{"id":"corr-NS","exits":["N","S"],"rows":["##.##","#...#","#...#","#...#","##.##"]},{"id":"corner-ES","exits":["E","S"],"rows":["#####","#...#","#....","#...#","##.##"]},{"id":"tee-NES","exits":["N","E","S"],"rows":["##.##","#...#","#....","#...#","##.##"]},{"id":"cap-W","exits":["W"],"rows":["#####","#...#","....#","#...#","#####"]},{"id":"corner-NW","exits":["N","W"],"rows":["##.##","#...#","....#","#...#","#####"]},{"id":"corr-EW","exits":["E","W"],"rows":["#####","#...#",".....","#...#","#####"]},{"id":"tee-NEW","exits":["N","E","W"],"rows":["##.##","#...#",".....","#...#","#####"]},{"id":"corner-SW","exits":["S","W"],"rows":["#####","#...#","....#","#...#","##.##"]},{"id":"tee-NSW","exits":["N","S","W"],"rows":["##.##","#...#","....#","#...#","##.##"]},{"id":"tee-ESW","exits":["E","S","W"],"rows":["#####","#...#",".....","#...#","##.##"]},{"id":"cross-NESW","exits":["N","E","S","W"],"rows":["##.##","#...#",".....","#...#","##.##"]},{"id":"cross-NSEW-pillar","exits":["N","E","S","W"],"rows":["##.##","#...#","..#..","#...#","##.##"]}]};
@@ -6491,6 +6492,51 @@ function buildTitleDrawList({
 }
 
 /**
+ * Build the WORLD-MENU title screen draw list.
+ * Regions: brand → subtitle → list (worlds + new-world slot) → menu hints.
+ * `items` is an array of { label, note, selected, kind }.
+ */
+function buildWorldMenuDrawList({
+  title,
+  subtitle,
+  intro,
+  paletteName,
+  items = [],
+  confirmDelete = null,
+  width = CANVAS_W,
+  height = CANVAS_H,
+} = {}) {
+  const L = createLayout({ width, height, marginX: 20, marginY: 24, gap: 10 });
+  L.define('brand', { lines: 1, lineHeight: 34, size: 22 });
+  L.define('subtitle', { lines: 1, lineHeight: 20, size: 12 });
+  L.define('intro', { lines: 2, lineHeight: 18, size: 12 });
+  const listLines = Math.max(4, Math.min(9, items.length + 1));
+  L.define('list', { lines: listLines, lineHeight: 20, size: 13 });
+  L.define('menu', { lines: 3, lineHeight: 20, size: 12 });
+
+  L.push('brand', title || 'CHAPEL PERILOUS', { color: 'accent', size: 22 });
+  L.push('subtitle', subtitle || '', { color: 'dim', size: 12 });
+  L.push('intro', intro || '', { color: 'faint', size: 12 });
+
+  if (confirmDelete) {
+    L.push('list', `delete ${stripSeed(confirmDelete.name)}?  [Y] yes  [N] no`, { color: 'hue', size: 13 });
+  } else {
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      const marker = it.selected ? '> ' : '  ';
+      const color = it.selected ? 'hue' : (it.kind === 'new' ? 'dim' : 'faint');
+      const line = `${marker}${it.label}${it.note ? ` — ${it.note}` : ''}`;
+      L.push('list', line, { color, size: 13 });
+    }
+  }
+
+  L.push('menu', `palette — ${stripSeed(paletteName || '—')}`, { color: 'dim', size: 11 });
+  L.push('menu', '[Space] continue selected   [N] new world   [X] delete', { color: 'dim', size: 12 });
+  L.push('menu', '[W/S] select   [P] palette   [?] all controls', { color: 'dim', size: 12 });
+  return L.rows();
+}
+
+/**
  * Build the CREATION (dealt-stranger) screen draw list.
  * Regions: header → name → stats → omen → carries → menu.
  */
@@ -6529,7 +6575,7 @@ function buildCreationDrawList({
   return L.rows();
 }
 
-return { monoAdvance, textWidth, stripSeed, wrapToWidth, ellipsize, createLayout, bustBoxFor, bustLeft, bustColW, rowBand, bandsOverlap, buildTitleDrawList, buildCreationDrawList, CANVAS_W, CANVAS_H };
+return { monoAdvance, textWidth, stripSeed, wrapToWidth, ellipsize, createLayout, bustBoxFor, bustLeft, bustColW, rowBand, bandsOverlap, buildTitleDrawList, buildWorldMenuDrawList, buildCreationDrawList, CANVAS_W, CANVAS_H };
 })();
 
 __M["src/engine/frame.js"] = (function () {
@@ -6685,7 +6731,7 @@ const SHARED = {
 // the "same key, same meaning" rule for the shared cluster above.
 const PER_MODE = {
   overworld: { r: 'rest', R: 'rest', k: 'save', K: 'save', l: 'load', L: 'load', u: 'worldmap', U: 'worldmap' },
-  title: { l: 'load', L: 'load' },
+  title: { n: 'newWorld', N: 'newWorld', x: 'delete', X: 'delete' },
   dungeon: { n: 'map', N: 'map', u: 'worldmap', U: 'worldmap' },
   city: { u: 'worldmap', U: 'worldmap' },
   creation: { r: 'reroll', R: 'reroll' },
@@ -6732,7 +6778,7 @@ const GLOBAL_HINTS = [
 ];
 
 const MODE_HINTS = {
-  title: [['Space', 'begin'], ['L', 'continue']],
+  title: [['Space', 'continue selected'], ['N', 'new world'], ['X', 'delete'], ['W/S', 'select']],
   creation: [['Space', 'accept'], ['R', 'deal again'], ['Esc', 'back']],
   overworld: [['WASD', 'walk'], ['E', 'enter'], ['U', 'map'], ['Q', 'journal'], ['R', 'rest'], ['K', 'save'], ['L', 'load']],
   dungeon: [['W/S', 'move'], ['A/D', 'turn'], ['N', 'dungeon map'], ['U', 'world map'], ['Q', 'journal'], ['Esc', 'leave']],
@@ -8092,6 +8138,334 @@ function createJournal({ prose, seed = 1 } = {}) {
 return { createJournal };
 })();
 
+__M["src/engine/worldgen.js"] = (function () {
+const { mulberry32, hashInt } = __M["src/engine/prng.js"];
+// Per-world seeding + procedural site placement (chp-worldgen lane).
+// All procedural placement flows through the seeded RNG; no Math.random.
+// The constants below are the operator-tunable dials — tweak counts/spacing without
+// touching the algorithm.
+
+/** Tunable dials: counts by site kind. */
+const DUNGEON_SITE_COUNT = 5;
+const CITY_SITE_COUNT = 3;
+
+/** Tunable dials: spacing and margin constraints. */
+const MIN_SITE_SPACING = 4;     // Chebyshev distance between any two sites
+const MIN_START_DISTANCE = 4;   // Chebyshev distance from the party start
+const EDGE_MARGIN = 2;          // padding added around the biome-derived bounds
+const MAX_PLACEMENT_ATTEMPTS = 200;
+
+/**
+ * Generate a fresh random uint32 seed.
+ * Uses the browser/WebCrypto `crypto.getRandomValues` when available (Node 18+
+ * provides this on `globalThis.crypto`). Callers that need a synchronous seed in
+ * a headless/no-crypto environment should pass one explicitly.
+ */
+function generateSeed() {
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    return crypto.getRandomValues(new Uint32Array(1))[0] >>> 0;
+  }
+  throw new Error('generateSeed: no synchronous entropy available (pass a seed explicitly)');
+}
+
+/** Chebyshev distance — the square-region metric the rest of the engine uses. */
+function cheby(ax, ay, bx, by) {
+  return Math.max(Math.abs(ax - bx), Math.abs(ay - by));
+}
+
+/**
+ * Derive a placement bounding box from absolute biome regions.
+ * The box covers every biome (center +/- radius) plus the edge margin, so
+ * procedural sites live in the same coordinate neighborhood as the hand-tuned
+ * biomes rather than floating in an arbitrary void.
+ */
+function deriveBoundsFromBiomes(biomes, edgeMargin = EDGE_MARGIN) {
+  const list = (biomes && biomes.biomes) || (Array.isArray(biomes) ? biomes : []);
+  if (!list.length) throw new Error('deriveBoundsFromBiomes: no biome definitions');
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const b of list) {
+    const r = (b.radius | 0) + edgeMargin;
+    minX = Math.min(minX, b.center.x - r);
+    minY = Math.min(minY, b.center.y - r);
+    maxX = Math.max(maxX, b.center.x + r);
+    maxY = Math.max(maxY, b.center.y + r);
+  }
+  if (!(minX <= maxX && minY <= maxY)) throw new Error('deriveBoundsFromBiomes: empty bounds');
+  return { minX, minY, maxX, maxY };
+}
+
+/**
+ * Place sites deterministically for a world.
+ * @param {number} seed — world seed
+ * @param {{x:number,y:number}} start — party start coordinate
+ * @param {object} biomes — biome definitions ({ biomes: [...] }) or array
+ * @param {object} opts — overrides for DUNGEON_SITE_COUNT, CITY_SITE_COUNT, etc.
+ * @param {function} namer — optional (rng) => name string; used to name sites
+ * @returns {{id:string, x:number, y:number, kind:string, name:string}[]}
+ */
+function placeSites(seed, start, biomes, opts = {}, namer = null) {
+  const dungeonCount = opts.dungeonCount ?? DUNGEON_SITE_COUNT;
+  const cityCount = opts.cityCount ?? CITY_SITE_COUNT;
+  const minSpacing = opts.minSpacing ?? MIN_SITE_SPACING;
+  const minStartDistance = opts.minStartDistance ?? MIN_START_DISTANCE;
+  const edgeMargin = opts.edgeMargin ?? EDGE_MARGIN;
+  const maxAttempts = opts.maxAttempts ?? MAX_PLACEMENT_ATTEMPTS;
+
+  const bounds = deriveBoundsFromBiomes(biomes, edgeMargin);
+  const rng = mulberry32((seed ^ 0x5154e) >>> 0);
+  const nameRng = mulberry32((seed ^ 0x8e9a) >>> 0);
+
+  const sites = [];
+  let idCounter = 0;
+
+  function withinBounds(p) {
+    return p.x >= bounds.minX && p.x <= bounds.maxX && p.y >= bounds.minY && p.y <= bounds.maxY;
+  }
+
+  function farEnough(p) {
+    if (cheby(p.x, p.y, start.x, start.y) < minStartDistance) return false;
+    for (const s of sites) {
+      if (cheby(p.x, p.y, s.x, s.y) < minSpacing) return false;
+    }
+    return true;
+  }
+
+  function candidate() {
+    const w = bounds.maxX - bounds.minX + 1;
+    const h = bounds.maxY - bounds.minY + 1;
+    return {
+      x: bounds.minX + Math.floor(rng() * w),
+      y: bounds.minY + Math.floor(rng() * h),
+    };
+  }
+
+  function tryPlace() {
+    for (let i = 0; i < maxAttempts; i++) {
+      const p = candidate();
+      if (withinBounds(p) && farEnough(p)) return p;
+    }
+    return null;
+  }
+
+  function siteName(kind) {
+    if (!namer) return `[SEED] ${kind} ${idCounter}`;
+    const base = namer(nameRng);
+    return formatSiteName(kind, base, opts.templates);
+  }
+
+  for (let i = 0; i < dungeonCount; i++) {
+    const p = tryPlace();
+    if (!p) throw new Error(`placeSites: could not place dungeon ${i} within bounds`);
+    sites.push({ id: `dungeon-${idCounter++}`, x: p.x, y: p.y, kind: 'dungeon', name: siteName('dungeon') });
+  }
+  for (let i = 0; i < cityCount; i++) {
+    const p = tryPlace();
+    if (!p) throw new Error(`placeSites: could not place city ${i} within bounds`);
+    sites.push({ id: `city-${idCounter++}`, x: p.x, y: p.y, kind: 'city', name: siteName('city') });
+  }
+
+  return sites;
+}
+
+/**
+ * Format a site name from a register template + a generated root.
+ * Templates live in data/register/sites.json and are [SEED]-marked.
+ */
+function formatSiteName(kind, root, templates = null) {
+  if (!templates || !templates[kind] || !templates[kind].length) {
+    return `[SEED] the ${root}`;
+  }
+  const idx = hashInt(root.length, kind.length, 0x9a7e) % templates[kind].length;
+  const tpl = templates[kind][idx];
+  return tpl.replace(/%s/g, root);
+}
+
+/**
+ * Build a fresh world config for a new game.
+ * Keeps the base world's terrain/biome/bands/chunkSize but swaps in a fresh seed
+ * and procedurally placed sites. The old hardcoded master seed is NOT used on the
+ * live New Game path — master.json remains a deterministic test fixture only.
+ */
+function generateWorldConfig(baseConfig, opts = {}) {
+  if (!baseConfig || typeof baseConfig !== 'object') {
+    throw new Error('generateWorldConfig: base config required');
+  }
+  const seed = opts.seed ?? generateSeed();
+  const biomes = opts.biomes ?? baseConfig.biomes;
+  if (!biomes) throw new Error('generateWorldConfig: biome definitions required');
+  const config = {
+    ...baseConfig,
+    seed,
+    sites: opts.sites ?? placeSites(seed, baseConfig.start, biomes, opts, opts.namer),
+  };
+  return config;
+}
+
+return { generateSeed, deriveBoundsFromBiomes, placeSites, formatSiteName, generateWorldConfig, DUNGEON_SITE_COUNT, CITY_SITE_COUNT, MIN_SITE_SPACING, MIN_START_DISTANCE, EDGE_MARGIN, MAX_PLACEMENT_ATTEMPTS };
+})();
+
+__M["src/engine/worldregistry.js"] = (function () {
+
+// Multi-world save registry (chp-worldgen lane).
+// A small localStorage-backed registry that tracks every world the player has
+// started, with per-world save slots. Existing single-slot saves are migrated in
+// without losing the run.
+
+const REGISTRY_KEY = 'chapel-perilous.worlds';
+const WORLD_SAVE_PREFIX = 'chapel-perilous.world-save.';
+const LEGACY_SAVE_KEY = 'chapel-perilous.save';
+
+/**
+ * Factory that binds to a localStorage-like storage object (default: global localStorage).
+ * All mutation goes through here; the returned API is what the shell and tests use.
+ */
+function createWorldRegistry(storage = null, opts = {}) {
+  const store = storage || safeStorage();
+  const namer = opts.namer || defaultNamer;
+
+  function read(key) {
+    try { return store.getItem(key); } catch (_) { return null; }
+  }
+  function write(key, value) {
+    try { store.setItem(key, value); return true; } catch (_) { return false; }
+  }
+  function remove(key) {
+    try { store.removeItem(key); return true; } catch (_) { return false; }
+  }
+
+  function parse(raw) {
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (_) { return null; }
+  }
+
+  function load() {
+    return parse(read(REGISTRY_KEY)) || [];
+  }
+
+  function save(registry) {
+    return write(REGISTRY_KEY, JSON.stringify(registry || []));
+  }
+
+  function generateId(seed) {
+    return `w-${(seed >>> 0).toString(16).padStart(8, '0')}`;
+  }
+
+  function generateName(seed) {
+    return namer(seed);
+  }
+
+  function createRecord(seed, name) {
+    const now = Date.now();
+    return {
+      id: generateId(seed),
+      seed: seed >>> 0,
+      name: name || generateName(seed),
+      created: now,
+      lastPlayed: now,
+    };
+  }
+
+  function find(registry, id) {
+    return registry.find((r) => r.id === id) || null;
+  }
+
+  function add(registry, seed, name) {
+    const id = generateId(seed);
+    if (find(registry, id)) return { registry, existing: true, record: find(registry, id) };
+    const record = createRecord(seed, name);
+    return { registry: [record, ...registry], existing: false, record };
+  }
+
+  function touch(registry, id) {
+    const now = Date.now();
+    return registry.map((r) => (r.id === id ? { ...r, lastPlayed: now } : r));
+  }
+
+  function removeRecord(registry, id) {
+    const next = registry.filter((r) => r.id !== id);
+    remove(worldSaveKey(id));
+    return next;
+  }
+
+  function worldSaveKey(id) {
+    return `${WORLD_SAVE_PREFIX}${id}`;
+  }
+
+  function loadWorldSave(id) {
+    return parse(read(worldSaveKey(id)));
+  }
+
+  function saveWorldSave(id, data) {
+    return write(worldSaveKey(id), JSON.stringify(data));
+  }
+
+  function deleteWorld(id) {
+    const before = load();
+    const next = removeRecord(before, id);
+    save(next);
+    return { before, after: next };
+  }
+
+  function migrateLegacy() {
+    const raw = read(LEGACY_SAVE_KEY);
+    if (!raw) return null;
+    const wrapper = parse(raw);
+    if (!wrapper || !wrapper.save || wrapper.save.version == null) {
+      // Unreadable or too old: clean it out so it does not keep blocking the title.
+      remove(LEGACY_SAVE_KEY);
+      return null;
+    }
+    const seed = wrapper.save.seed >>> 0;
+    const registry = load();
+    const { registry: next, record } = add(registry, seed, `legacy world ${generateId(seed).slice(-4)}`);
+    save(next);
+    saveWorldSave(record.id, wrapper);
+    remove(LEGACY_SAVE_KEY);
+    return record;
+  }
+
+  return {
+    REGISTRY_KEY,
+    WORLD_SAVE_PREFIX,
+    LEGACY_SAVE_KEY,
+    generateId,
+    generateName,
+    createRecord,
+    load,
+    save,
+    add,
+    touch,
+    removeRecord,
+    deleteWorld,
+    loadWorldSave,
+    saveWorldSave,
+    worldSaveKey,
+    migrateLegacy,
+  };
+}
+
+/** Best-effort default world name: Discordiana-style, never generic fantasy. */
+function defaultNamer(seed) {
+  const n = ((seed * 0x9e3779b9) >>> 0) % 23;
+  return `[SEED] World ${n || 5}`;
+}
+
+/** Storage access that never throws in a headless / no-localStorage environment. */
+function safeStorage() {
+  if (typeof localStorage !== 'undefined') return localStorage;
+  const mem = new Map();
+  return {
+    getItem: (k) => mem.get(k) || null,
+    setItem: (k, v) => { mem.set(k, String(v)); },
+    removeItem: (k) => { mem.delete(k); },
+  };
+}
+
+/* export list: REGISTRY_KEY, WORLD_SAVE_PREFIX, LEGACY_SAVE_KEY */
+
+return { createWorldRegistry, REGISTRY_KEY, WORLD_SAVE_PREFIX, LEGACY_SAVE_KEY };
+})();
+
 __M["src/main.js"] = (function () {
 const { createWorld } = __M["src/engine/world.js"];
 const { createParty } = __M["src/engine/party.js"];
@@ -8126,7 +8500,7 @@ const { drawTile, reprShade, contrastOutlineShade, dimOutlineShade } = __M["src/
 const { createBusts, bustArtId } = __M["src/engine/bustart.js"];
 const { styleFor } = __M["src/engine/dungeonregister.js"];
 const { renderFP } = __M["src/engine/fprender.js"];
-const { CANVAS_W, CANVAS_H, buildTitleDrawList, buildCreationDrawList, stripSeed, bustBoxFor } = __M["src/engine/layout.js"];
+const { CANVAS_W, CANVAS_H, buildWorldMenuDrawList, buildCreationDrawList, stripSeed, bustBoxFor } = __M["src/engine/layout.js"];
 const { buildKeybar, buildHelpOverlay, buildPanel, buildNatureDrawList } = __M["src/engine/chrome.js"];
 const { computeFrame, frameDisplay } = __M["src/engine/frame.js"];
 const { createMinimap, exploreCurrent, drawMinimap, featureGlyph } = __M["src/engine/minimap.js"];
@@ -8136,10 +8510,13 @@ const { buildCombatDrawList, buildDeathDrawList, buildBuildingDrawList, buildSho
 const { createJournal } = __M["src/engine/journal.js"];
 const { RANKS } = __M["src/engine/character.js"];
 const { dirFor, actionFor } = __M["src/engine/bindings.js"];
+const { generateSeed, generateWorldConfig } = __M["src/engine/worldgen.js"];
+const { createWorldRegistry } = __M["src/engine/worldregistry.js"];
 const master = __DATA["data/world/master.json"];
 const biomeData = __DATA["data/world/biomes.json"];
 const biomeRegister = __DATA["data/register/biomes.json"];
 const register = __DATA["data/register/system.json"];
+const siteTemplates = __DATA["data/register/sites.json"];
 const pools = __DATA["data/register/pools.json"];
 const phonemes = __DATA["data/register/phonemes.json"];
 const kit = __DATA["data/dungeon/kit.json"];
@@ -8155,6 +8532,8 @@ const palettesData = __DATA["data/palettes.json"];
 // renders a monochrome viewport to canvas, moves on arrow/WASD keys. All DOM
 // work is deferred behind a `window` guard so this module imports cleanly in
 // Node (the boot-smoke test loads it headlessly).
+/* export list: master */
+
 const TILE = 32;      // default px per tile — 2px/art-pixel over the 16px matrices
                       // (crisp); the nav scene fits as many tiles as it can hold.
 
@@ -8169,6 +8548,8 @@ let SCHEME = null;     // active scheme id
 const TILE_ART = createTileArt();
 // Chunky block-shaded bestiary/party busts (M5), same ramp + draw path.
 const BUSTS = createBusts();
+// Seeded name engine — created once and reused for world + site naming.
+const NAMES = createNames(phonemes);
 
 // shade index (0..6) -> the active scheme's colour (single hue, brightness only).
 function shadeColor(shade) {
@@ -8194,7 +8575,8 @@ function accentColor(t = 1) {
   return `rgb(${Math.round(255 * t)},${Math.round(176 * t)},${Math.round(64 * t)})`;
 }
 
-function createGame(config = master) {
+function createGame(config) {
+  if (!config || typeof config !== 'object') throw new Error('createGame: config object required');
   const world = createWorld(config);
   const prose = createProse(pools);
   const names = createNames(phonemes);
@@ -8540,10 +8922,86 @@ function boot() {
   // panel + bottom console strip — fills the whole window with square pixels, no
   // pillarbox. Recomputed on resize. `frame` is the single layout source of truth.
   let frame = computeFrame(window.innerWidth || 1440, window.innerHeight || 900);
-  const game = createGame();
+  // World registry: tracks every started world with its seed, auto-name, and save.
+  const registry = createWorldRegistry();
+
+  // Mutable game container — reassigned whenever the player switches worlds from
+  // the title menu. All boot-level closures read the current `let` bindings,
+  // so a world switch does not need to rebuild the whole shell.
+  let game, world, party, session, journal, wanderers, biomes, loot, events, logEvent, refreshCapacity, social, talkPointers, describeSite, describeBiomeGround, overworldStep, enterSite, enterCity, describeBuilding, enterBuilding, describeRoom, stepEncounter, shop;
+  let activeWorld = null; // current registry record
+  let worldSel = 0;       // title-screen cursor
+  let confirmDelete = null;
+
+  function makeWorldConfig(seed) {
+    return generateWorldConfig(master, {
+      seed,
+      biomes: biomeData,
+      namer: (rng) => NAMES.worldName(rng),
+      templates: siteTemplates,
+    });
+  }
+
+  function initGame(record) {
+    activeWorld = record;
+    game = createGame(makeWorldConfig(record.seed));
+    world = game.world;
+    party = game.party;
+    session = game.session;
+    journal = game.journal;
+    wanderers = game.wanderers;
+    biomes = game.biomes;
+    loot = game.loot;
+    events = game.events;
+    logEvent = game.logEvent;
+    refreshCapacity = game.refreshCapacity;
+    social = game.social;
+    talkPointers = game.talkPointers;
+    describeSite = game.describeSite;
+    describeBiomeGround = game.describeBiomeGround;
+    overworldStep = game.overworldStep;
+    enterSite = game.enterSite;
+    enterCity = game.enterCity;
+    describeBuilding = game.describeBuilding;
+    enterBuilding = game.enterBuilding;
+    describeRoom = game.describeRoom;
+    stepEncounter = game.stepEncounter;
+    shop = game.shop;
+    return game;
+  }
+
+  function newWorld() {
+    const seed = generateSeed();
+    const { registry: nextRecords, record } = registry.add(registry.load(), seed);
+    registry.save(nextRecords);
+    return initGame(record);
+  }
+
+  function continueWorld(record) {
+    initGame(record);
+    const wrapper = registry.loadWorldSave(record.id);
+    if (wrapper && wrapper.save) {
+      game.load(wrapper.save);
+      if (wrapper.scheme && PALETTE.ids().includes(wrapper.scheme)) SCHEME = wrapper.scheme;
+    }
+    registry.save(registry.touch(registry.load(), record.id));
+  }
+
+  // One-time palette setup (scheme is persisted per-world save).
   PALETTE = createPalettes(palettesData);
   SCHEME = PALETTE.defaultId;
-  const { world, party, session, journal, wanderers, biomes, loot, events, logEvent, refreshCapacity, social, talkPointers, describeSite, describeBiomeGround, overworldStep, enterSite, enterCity, describeBuilding, enterBuilding, describeRoom, stepEncounter, shop } = game;
+
+  // Bootstrap the title menu from the registry, migrating any legacy single-slot save.
+  registry.migrateLegacy();
+  let records = registry.load();
+  if (!records.length) {
+    const seed = generateSeed();
+    const { registry: nextRecords, record } = registry.add(records, seed);
+    records = nextRecords;
+    registry.save(records);
+  }
+  initGame(records[0]);
+  worldSel = 0;
   const combatProse = createCombatProse(combatRegister); // M11: the in-voice combat surface
   // Audio (Part B): code-synthesised ambient bed + SFX. Only wires a real context in
   // a browser that provides one; headless/tests get a silent no-op. Ambient starts
@@ -8551,7 +9009,7 @@ function boot() {
   // AUDIO-NOTE.md) and are never inlined into the single-file build.
   const AC = (typeof window !== 'undefined') && (window.AudioContext || window.webkitAudioContext);
   const audio = createAudio({ ctxFactory: AC ? () => new AC() : null });
-  const SAVE_KEY = 'chapel-perilous.save';
+  // Per-world save slots live through the registry; the legacy key is migrated at boot.
   // Map zoom: px per tile on the nav scenes. [+]/[-] step it, so the operator can
   // trade a wider view for chunkier tiles. The scene fits as many tiles as its
   // (responsive) width/height allow at this size, party centred.
@@ -9892,13 +10350,27 @@ function boot() {
 
   function renderTitle() {
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-    paintRows(buildTitleDrawList({
+    const records = registry.load();
+    const items = [];
+    // The "New World" slot sits at the top of the list.
+    items.push({ label: '[N] new world', note: '', kind: 'new', selected: worldSel === 0 });
+    for (let i = 0; i < records.length; i++) {
+      const r = records[i];
+      const hasSave = registry.loadWorldSave(r.id) != null;
+      const note = hasSave ? 'filed' : 'unfiled';
+      items.push({ label: stripSeed(r.name), note, kind: 'world', selected: worldSel === i + 1 });
+    }
+    paintRows(buildWorldMenuDrawList({
       title: register.title,
       subtitle: register.subtitle,
-      intro: register.boot,
+      intro: confirmDelete ? '' : register.boot,
       paletteName: PALETTE.get(SCHEME).name,
+      items,
+      confirmDelete,
     }));
-    sceneStatus = stripSeed(register.subtitle || 'the map is not the territory');
+    sceneStatus = confirmDelete
+      ? `delete ${stripSeed(confirmDelete.name)}?`
+      : stripSeed(register.subtitle || 'the map is not the territory');
     status.textContent = 'CHAPEL PERILOUS — the map is not the territory';
   }
 
@@ -9966,13 +10438,13 @@ function boot() {
     mode = 'overworld'; run = null; city = null; building = null; showMinimap = false;
   }
 
-  // Load the saved run (shared by title's [L] continue and overworld's [L]).
+  // Load the saved run for the active world.
   function loadSave() {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return 'none';
-    const s = JSON.parse(raw);
-    game.load(s.save);
-    if (s.scheme && PALETTE.ids().includes(s.scheme)) SCHEME = s.scheme;
+    if (!activeWorld) return 'none';
+    const wrapper = registry.loadWorldSave(activeWorld.id);
+    if (!wrapper || !wrapper.save) return 'none';
+    game.load(wrapper.save);
+    if (wrapper.scheme && PALETTE.ids().includes(wrapper.scheme)) SCHEME = wrapper.scheme;
     return 'ok';
   }
 
@@ -10129,9 +10601,36 @@ function boot() {
     }
     if (mode === 'title') {
       e.preventDefault();
-      if (a === 'confirm') { mode = 'creation'; render(); return; }
-      if (a === 'load') {
-        try { if (loadSave() === 'ok') { mode = 'overworld'; owNote = '[SEED] the record is reinstated'; } } catch (_) { /* stay on title */ }
+      const k = (e.key || '').toLowerCase();
+      if (confirmDelete) {
+        if (a === 'confirm' || k === 'y') {
+          registry.deleteWorld(confirmDelete.id);
+          confirmDelete = null;
+          worldSel = Math.min(worldSel, Math.max(0, registry.load().length));
+          render(); return;
+        }
+        if (a === 'cancel' || k === 'n') { confirmDelete = null; render(); return; }
+        render(); return;
+      }
+      const records = registry.load();
+      const maxSel = records.length; // slot 0 is "new world"; slots 1..N are worlds
+      const dir = dirFor(e.key);
+      if (dir === 'N') { worldSel = Math.max(0, worldSel - 1); render(); return; }
+      if (dir === 'S') { worldSel = Math.min(maxSel, worldSel + 1); render(); return; }
+      if (a === 'newWorld') { newWorld(); mode = 'creation'; render(); return; }
+      if (a === 'delete' && worldSel > 0) {
+        confirmDelete = records[worldSel - 1];
+        render(); return;
+      }
+      if (a === 'confirm') {
+        if (worldSel === 0) { newWorld(); mode = 'creation'; render(); return; }
+        const record = records[worldSel - 1];
+        try {
+          const hasSave = registry.loadWorldSave(record.id) != null;
+          continueWorld(record);
+          mode = hasSave ? 'overworld' : 'creation';
+          owNote = hasSave ? '[SEED] the record is reinstated' : '[SEED] a new run in an old world';
+        } catch (_) { /* stay on title */ }
         render(); return;
       }
       return;
@@ -10302,7 +10801,11 @@ function boot() {
       if (a === 'save') {
         e.preventDefault();
         stashDungeonMap();
-        try { localStorage.setItem(SAVE_KEY, JSON.stringify({ save: game.save(), scheme: SCHEME })); owNote = '[SEED] the operation is filed'; } catch (_) { owNote = '[SEED] the filing cabinet is locked'; }
+        try {
+          registry.saveWorldSave(activeWorld.id, { save: game.save(), scheme: SCHEME });
+          registry.save(registry.touch(registry.load(), activeWorld.id));
+          owNote = '[SEED] the operation is filed';
+        } catch (_) { owNote = '[SEED] the filing cabinet is locked'; }
         render(); return;
       }
       if (a === 'load') {
@@ -10416,8 +10919,13 @@ function boot() {
   // Drives every render path with REAL game state so a broken frame/panel/console
   // draw fails CI. `renderMode` sets up a mode via the actual game helpers.
   function renderMode(m) {
+    // chp-worldgen: sites are procedurally placed per-world now, so this test conduit
+    // must pull from the LIVE world's registry (`world.listSites()`), never the static
+    // master.json fixture — the two diverge as soon as a random seed places sites
+    // anywhere other than master.json's hand-authored coordinates.
     if (m === 'dungeon' || m === 'combat' || m === 'dungeonEnc') {
-      run = enterSite(master.sites.find((s) => s.kind === 'dungeon') || master.sites[0]);
+      const sites = world.listSites();
+      run = enterSite(sites.find((s) => s.kind === 'dungeon') || sites[0]);
       encLine = ''; mode = 'dungeon';
       if (m === 'dungeonEnc') {
         dungeonEnemy = run.life.list()[0] || { beingId: 'cave-rat', name: 'a shape', cx: 0, cy: 0 };
@@ -10429,7 +10937,8 @@ function boot() {
         if (enc && enc.kind === 'fight') beginCombat(enc);
       }
     } else if (m === 'city' || m === 'building') {
-      city = enterCity(master.sites.find((s) => s.kind === 'city') || master.sites[0]);
+      const sites = world.listSites();
+      city = enterCity(sites.find((s) => s.kind === 'city') || sites[0]);
       if (m === 'building') { building = enterBuilding(city.city.buildings[0], city); mode = 'building'; }
       else mode = 'city';
     } else {
@@ -10449,7 +10958,7 @@ if (typeof window !== 'undefined') {
   else boot();
 }
 
-return { createGame, boot };
+return { createGame, boot, master };
 })();
 globalThis.__CHP = __M["src/main.js"];
 })();
