@@ -41,7 +41,7 @@ __DATA["data/register/shop.json"] = {"_note":"[SEED] M12 shops — seeded-chaoti
 __DATA["data/world/master.json"] = {"seed":2323,"chunkSize":16,"streamRadius":1,"noise":{"octaves":4,"freq":0.07,"lacunarity":2,"gain":0.5},"bands":[{"tile":"DEEP","max":0.3},{"tile":"WATER","max":0.38},{"tile":"SAND","max":0.44},{"tile":"GRASS","max":0.62},{"tile":"FOREST","max":0.74},{"tile":"HILL","max":0.85},{"tile":"MOUNT","max":1.01}],"start":{"x":5,"y":5},"sites":[{"id":"chapel-0","x":8,"y":6,"kind":"dungeon","name":"[SEED] The Chapel Perilous"},{"id":"waystation-23","x":3,"y":9,"kind":"dungeon","name":"[SEED] Waystation 23"},{"id":"hive-5","x":12,"y":11,"kind":"city","name":"[SEED] Hive of the Fifth"}],"gates":[{"id":"fen-ford-0","x":11,"y":15,"requiresTag":"ford","label":"[SEED] the drowned ford"}]};
 __DATA["data/world/biomes.json"] = {"_note":"[SEED] M9 BIOMES (DIRECTIONS-2026-08-02-BIOMES) — guaranteed areas present in EVERY run, alongside the procedural material. Placement is ABSOLUTE world coords (the same model as sites) so a given world always reads the same; each biome is a chebyshev square region (center +/- radius) and regions MUST NOT overlap (the engine validates this by construction). Four identity channels wire off these defs: terrain `dress` ({ baseTileId: artId } — art added M9 inc2), monster/NPC pool `wanderers` + encounter `table`, and the vibe pair `weirdness` + `register` (the dominant register the prose engine leans on in-biome). The Chapel Perilous sits inside `perilous-verge` and keeps its full-collision pin. Player-facing biome flavor is generated prose ([SEED] at output); the discrete event fragments live in data/register/biomes.json.","biomes":[{"id":"perilous-verge","name":"[SEED] The Perilous Verge","blurb":"[SEED] the unquiet ground that leans toward the Chapel","center":{"x":8,"y":6},"radius":2,"weirdness":0.95,"register":"conspiratorial","wanderers":["hollow-pilgrim","discordian-monk"],"table":"biome_perilous_verge","dress":{"GRASS":"VERGE_GROUND","SAND":"VERGE_GROUND"}},{"id":"pine-barrens","name":"[SEED] The Pine Barrens","blurb":"[SEED] black conifers over rattling knoll-rock","center":{"x":20,"y":2},"radius":3,"weirdness":0.55,"register":"ominous","wanderers":["law-of-fives-hound","hollow-pilgrim","pine-warden"],"table":"biome_pine_barrens","dress":{"FOREST":"PINE_BARRENS","GRASS":"PINE_FLOOR"}},{"id":"salt-flats","name":"[SEED] The Salt Flats","blurb":"[SEED] a bleached pan surveyed to no conclusion","center":{"x":4,"y":18},"radius":3,"weirdness":0.2,"register":"clinical","wanderers":["carrion-crow","hollow-pilgrim","salt-preacher"],"table":"biome_salt_flats","dress":{"GRASS":"SALT_PAN","SAND":"SALT_CRUST"}},{"id":"drowned-fen","name":"[SEED] The Drowned Fen","blurb":"[SEED] reed-water that keeps its own filing system","center":{"x":11,"y":16},"radius":3,"weirdness":0.7,"register":"conspiratorial","wanderers":["carrion-crow","discordian-monk","fen-lantern"],"table":"biome_drowned_fen","dress":{"GRASS":"FEN_REED","SAND":"FEN_MUD","WATER":"FEN_POOL"}}]};
 __DATA["data/register/biomes.json"] = {"_note":"[SEED] M9 biome ambient-event fragments (events channel). Short subject phrases the prose engine wraps with a generated, register-weighted event tail (biome weirdness + register). Every fragment is [SEED]; the composed output is [SEED] too — Ray's voice pass replaces the wording, the event engine stays. Keyed by biome id.","events":{"perilous-verge":["[SEED] the ground disagrees with your feet","[SEED] a door stands here with no wall around it","[SEED] the fnords thicken until you can almost read them","[SEED] your shadow arrives a moment before you do","[SEED] a bell you cannot see is rung once, apologetically"],"pine-barrens":["[SEED] the pines close the path quietly behind you","[SEED] something in the dark counts your steps in fives","[SEED] resin holds an old scream very still","[SEED] a knoll-stone settles as though it had been listening","[SEED] the needles underfoot spell nothing you will admit to reading"],"salt-flats":["[SEED] the pan records your passage in a thin line of salt","[SEED] a survey stake marks nothing here, precisely","[SEED] the heat bends the horizon into a standing figure","[SEED] the glare completes its report and files you under it","[SEED] a wind crosses the flat carrying the smell of old paper"],"drowned-fen":["[SEED] the reeds pass a folded note between them","[SEED] a bell rings once, underwater, and is corrected","[SEED] the water keeps its own filing system and consults it","[SEED] something surfaces, reconsiders the whole affair, and sinks","[SEED] your reflection lingers a beat after you move on"]}};
-__DATA["data/register/system.json"] = {"title":"[SEED] CHAPEL PERILOUS","subtitle":"[SEED] a recovered operations manual","boot":"[SEED] The map is not the territory. Neither, it turns out, is the territory.","prompt_enter_site":"[SEED] A door where the map insists there is none. Enter?","prompt_exit_site":"[SEED] Arrows crawl; Esc returns you to the surface, if it is still there.","npc_greetings":["[SEED] nods as if you had an appointment, and walks on.","[SEED] asks the time, then answers it themselves. Wrongly.","[SEED] presses a leaflet into your hand. It is blank on both sides.","[SEED] mistakes you for someone else, and is relieved to be wrong.","[SEED] mutters a number under their breath and keeps walking.","[SEED] tips a hat that isn't there and is gone before you answer."],"beast_note":"[SEED] blocks the road — no words for this one.","onterrain":{"DEEP":"[SEED] Deep water. It does not want you.","WATER":"[SEED] Shallows. Still not a road.","SAND":"[SEED] Sand. Someone raked a 23 into it and left.","GRASS":"[SEED] Grass. Ordinary, which is the suspicious part.","FOREST":"[SEED] Trees close ranks behind you.","HILL":"[SEED] High ground. The pattern is easier to see from here, or worse.","MOUNT":"[SEED] The peak refuses passage. Fnord."},"onblocked":{"DEEP":["[SEED] The deep water declines your application to cross it.","[SEED] You step toward the dark water; the dark water steps back. Net zero.","[SEED] Below the surface, something keeps very still. You keep to the shore."],"WATER":["[SEED] The shallows soak your boots and refuse the rest of you.","[SEED] Reed and standing water. Not a road, whatever the map alleges.","[SEED] Your foot finds mud where it wanted ground. You reconsider."],"MOUNT":["[SEED] The peak refuses passage. Fnord.","[SEED] Stone the size of an argument. You lose the argument.","[SEED] The ridge is not interested in a shortcut today."],"default":["[SEED] Something declines to let you pass here.","[SEED] The way is shut, in the ordinary, unremarkable manner of shut ways.","[SEED] You bump the edge of the possible and step back onto it."]}};
+__DATA["data/register/system.json"] = {"title":"[SEED] CHAPEL PERILOUS","subtitle":"[SEED] a recovered operations manual","boot":"[SEED] The map is not the territory. Neither, it turns out, is the territory.","prompt_enter_site":"[SEED] A door where the map insists there is none. Enter?","prompt_exit_site":"[SEED] Arrows crawl; Esc returns you to the surface, if it is still there.","npc_greetings":["[SEED] nods as if you had an appointment, and walks on.","[SEED] asks the time, then answers it themselves. Wrongly.","[SEED] presses a leaflet into your hand. It is blank on both sides.","[SEED] mistakes you for someone else, and is relieved to be wrong.","[SEED] mutters a number under their breath and keeps walking.","[SEED] tips a hat that isn't there and is gone before you answer."],"beast_note":"[SEED] blocks the road — no words for this one.","rest_refused_wild":["[SEED] the open country offers no bed; rest waits for walls.","[SEED] you cannot make camp here — the ground is still watching.","[SEED] rest is a service of the town, not the field."],"consumable_heal":"[SEED] you use ${item}; the stranger mends ${before}→${after} hp","onterrain":{"DEEP":"[SEED] Deep water. It does not want you.","WATER":"[SEED] Shallows. Still not a road.","SAND":"[SEED] Sand. Someone raked a 23 into it and left.","GRASS":"[SEED] Grass. Ordinary, which is the suspicious part.","FOREST":"[SEED] Trees close ranks behind you.","HILL":"[SEED] High ground. The pattern is easier to see from here, or worse.","MOUNT":"[SEED] The peak refuses passage. Fnord."},"onblocked":{"DEEP":["[SEED] The deep water declines your application to cross it.","[SEED] You step toward the dark water; the dark water steps back. Net zero.","[SEED] Below the surface, something keeps very still. You keep to the shore."],"WATER":["[SEED] The shallows soak your boots and refuse the rest of you.","[SEED] Reed and standing water. Not a road, whatever the map alleges.","[SEED] Your foot finds mud where it wanted ground. You reconsider."],"MOUNT":["[SEED] The peak refuses passage. Fnord.","[SEED] Stone the size of an argument. You lose the argument.","[SEED] The ridge is not interested in a shortcut today."],"default":["[SEED] Something declines to let you pass here.","[SEED] The way is shut, in the ordinary, unremarkable manner of shut ways.","[SEED] You bump the edge of the possible and step back onto it."]}};
 __DATA["data/register/sites.json"] = {"dungeon":["[SEED] the %s Chapel","[SEED] the %s Hollow","[SEED] the %s Threshold","[SEED] Waystation %s","[SEED] the %s Gate"],"city":["[SEED] the %s Hive","[SEED] %s Town","[SEED] %s Station"]};
 __DATA["data/register/pools.json"] = {"_note":"[SEED] Word pools ported from Veridian Contraption's prose_gen.rs (Ray's own game; clean-room applies to Cyclopean only). Fragments, not final utterances — the prose engine composes them and marks its output [SEED] until the operator's voice pass. Direction: Illuminatus!/RAW/Discordiana via the collision of five registers.","registers":["clinical","lyrical","ominous","conspiratorial","bureaucratic"],"verbs":{"bureaucratic":["filed","disputed","remanded","indicated","noted","acknowledged","tabled","deferred","classified","cross-referenced","stamped","countersigned","amended","appended","logged","archived","processed","ratified","formalized"],"clinical":["observed","documented","catalogued","recorded","measured","classified","assessed","registered","indexed","annotated","enumerated","tabulated","quantified","surveyed","logged"],"lyrical":["held","unfolded","gathered","received","absorbed","noted","traced","folded","carried","preserved","recorded","offered","set down","kept","composed"],"ominous":["sealed","annulled","revoked","buried","erased","destroyed","rescinded","condemned","stricken","voided","foreclosed","terminated","withdrawn","burned","obliterated"],"conspiratorial":["intercepted","concealed","redirected","encrypted","falsified","redacted","implicated","surveilled","compromised","rerouted","classified","leaked","suppressed","obscured"]},"nouns":{"bureaucratic":["filing","counter-filing","tribunal","committee","subcommittee","provisional review","formal notation","memorandum","register","ledger entry","supplementary docket","notice of intent","petition","procedural review","brief","disposition","writ","preliminary finding"],"clinical":["field report","specimen report","field notation","ledger entry","survey","classification record","classification","specimen","sample","survey record","catalogue entry","preliminary finding","case file","taxonomic summary","diagnostic summary"],"lyrical":["notation","fragment","remnant","record","account","impression","passage","recollection","observation","margin note","inscription","remark","entry","gesture","detail"],"ominous":["decree","edict","record","judgment","ledger","entry","account","notice","warning","declaration","testament","document","writ","pronouncement","covenant"],"conspiratorial":["dossier","dead drop","cipher","cell","communiqué","cover file","safe house","handler","front organization","surveillance report","sealed file","contact","back channel","cutout","register","filing","ledger entry","memorandum","notice","record","committee","brief"]},"temporal_hedges":["in due course","pending review","subject to revision","contingent upon further inquiry","without prejudice","at some future date to be determined","upon completion of the relevant paperwork","when circumstances permit","at the discretion of the office","following the customary delays"],"causes":{"mundane":["routine factors","natural causes","expected developments","ordinary circumstances","unremarkable conditions","the usual administrative processes","seasonal pressures"],"absurdist":["a metaphysical irregularity","an unresolved taxonomic dispute","numerous procedural objections","a clerical error of uncertain origin","the continued existence of the previous filing","an unpaid obligation dating to the previous era","a boundary dispute that has since been resolved but not acknowledged","the unauthorized relocation of a surveyor's benchmark","a prophecy that was officially retracted but not forgotten","the spontaneous reclassification of adjacent terrain","an audit that discovered more entries than there were things to audit","a notarized complaint about the process of notarizing complaints","the discovery that the relevant form had been printed in a language not yet invented","a census that counted the same individual three times under different headings","the physical relocation of a building that the records insist has not moved","a jurisdictional overlap that assigned two offices authority over the same void","the retirement of the only person who understood the filing system","a calendar dispute that placed the same day in two different weeks"],"impossible":["the retroactive non-occurrence of the event in question","the discovery that the relevant location had been elsewhere at the time","a weight discrepancy caused by the temporary absence of gravity in the filing room","the formal reclassification of time as 'non-sequential' in the affected district","the refusal of the river to continue flowing in the agreed-upon direction","a surveyor's report indicating that the territory in question had declined to exist","the observation that two buildings had exchanged positions without documentation","the conclusion that the debt in question predated the existence of the debtor","a geological fault that the arbitration board found to be acting in bad faith","the determination that the document had been signed before it was written","an accounting error caused by the number seven temporarily meaning something else","the discovery that the meeting had occurred in a room that the building does not contain"]},"physical_loot":["document","specimen","ledger","artifact","curiosity","sealed envelope","fragment","relic","vial","bundle of papers","tarnished instrument","stone tablet","rolled parchment","corroded key","bone implement","glass vessel"],"neutral_verbs":["noted","recorded","acknowledged","logged","filed","registered","processed","documented","catalogued","entered"]};
 __DATA["data/register/phonemes.json"] = [{"name_flavor":"Guttural — short, consonant-heavy","onset":["k","g","d","dr","gr","kr","b","br","t","th","wh","tr"],"nucleus":["e","u","a","o","i"],"coda":["lm","rr","cht","ck","rk","nt","st","lk","sk","rd","ft","ng","ld","rg"],"syllable_patterns":["CVC","CVC","CVC"],"settlement_suffixes":["holm","keep","burg","mark","stead","crag","gard","fell"],"compound":false},{"name_flavor":"Sibilant — longer, vowel-rich","onset":["s","sh","v","sv","th","sl","z","r","l",""],"nucleus":["ee","aa","i","e","a","o","ai","oo","u"],"coda":["th","ss","sh","n","r","l","s","nd","ll"],"syllable_patterns":["CVC","CV","VC","V"],"settlement_suffixes":["essa","anis","issi","een","aal","oth","ais","ira"],"compound":false},{"name_flavor":"Nasal — rhythmic, resonant","onset":["m","n","nn","gn","","g","b","d"],"nucleus":["e","a","o","i","u"],"coda":["n","m","ng","nn","nk","nd","nt","ll","rn","mm","nv","r"],"syllable_patterns":["CVC","VC","CVC"],"settlement_suffixes":["mond","nim","enn","ang","ummer","inn","annen","ond"],"compound":false},{"name_flavor":"Compound — hyphenated, diplomatic","onset":["p","d","k","t","b","w","kr","pl","tr",""],"nucleus":["e","i","a","o","u"],"coda":["lm","rr","ck","n","st","th","lk","v","ld"],"syllable_patterns":["CVC","CV","VC"],"settlement_suffixes":[],"compound":true}];
@@ -49,9 +49,10 @@ __DATA["data/dungeon/kit.json"] = {"_note":"[SEED] authored segment tile-kit; #=
 __DATA["data/bestiary/beings.json"] = {"_note":"[SEED] Bestiary — CONTENT-IDENTITY-2026-08-02. ~12 beings spanning city/overworld/dungeon and every interaction archetype. All names/register [SEED] until Ray's voice pass. `interaction` lists ONLY the verbs that bite (overawe=NERVE, bargain=PULL, bind=GNOSIS, impress=CRAFT); an omitted verb is closed. `sacred:true` = refuses ALL verbs, never recruitable — the small class that makes the rule feel real. `portrait` is a recipe stub for the later gallery pass (chunky block-shaded bust). Stats-lite: hp + weapon band only — combat reads no stat.","beings":[{"id":"cave-rat","name":"[SEED] Cave Rat","habitat":["dungeon"],"rarity":"common","hp":3,"weapon":{"name":"[SEED] yellow teeth","dmg":[1,2]},"interaction":{"impress":"open"},"want":"food","recruitable":true,"register":{"weirdness":0.15},"portrait":{"shape":"squat","shades":[1,3],"marks":2},"behavior":"pack","defense":"dodge"},{"id":"carrion-crow","name":"[SEED] Carrion Crow","habitat":["overworld"],"rarity":"common","hp":3,"weapon":{"name":"[SEED] scavenging beak","dmg":[1,2]},"interaction":{"impress":"open"},"want":"food","recruitable":true,"register":{"weirdness":0.15},"portrait":{"shape":"squat","shades":[1,2],"marks":2},"behavior":"cowardly","defense":"dodge"},{"id":"gutter-clerk","name":"[SEED] Gutter Clerk","habitat":["city","dungeon"],"rarity":"common","hp":6,"weapon":{"name":"[SEED] rubber stamp","dmg":[1,3]},"interaction":{"bargain":"open","overawe":"hard"},"want":"secrets","recruitable":true,"register":{"weirdness":0.3},"portrait":{"shape":"tall","shades":[2,4],"marks":1},"behavior":"steady","defense":"avoid","talkInCombat":true},{"id":"hollow-pilgrim","name":"[SEED] Hollow Pilgrim","habitat":["overworld","dungeon"],"rarity":"common","hp":7,"weapon":{"name":"[SEED] walking staff","dmg":[2,4]},"interaction":{"overawe":"open","impress":"hard"},"want":"attention","recruitable":true,"register":{"weirdness":0.35},"portrait":{"shape":"tall","shades":[1,4],"marks":0},"behavior":"steady","defense":"avoid","talkInCombat":true},{"id":"lodge-initiate","name":"[SEED] Lodge Initiate","habitat":["city"],"rarity":"uncommon","hp":8,"weapon":{"name":"[SEED] ceremonial dagger","dmg":[2,5]},"interaction":{"bargain":"open","impress":"open"},"want":"money","recruitable":true,"register":{"weirdness":0.4},"portrait":{"shape":"blocky","shades":[2,5],"marks":3},"behavior":"aggressive","defense":"avoid"},{"id":"law-of-fives-hound","name":"[SEED] Law-of-Fives Hound","habitat":["overworld"],"rarity":"uncommon","hp":9,"weapon":{"name":"[SEED] fivefold bite","dmg":[3,6]},"interaction":{"impress":"hard"},"want":"blood","recruitable":true,"register":{"weirdness":0.55},"portrait":{"shape":"squat","shades":[1,5],"marks":5},"behavior":"pack","defense":"dodge"},{"id":"discordian-monk","name":"[SEED] Discordian Monk","habitat":["overworld","city"],"rarity":"uncommon","hp":7,"weapon":{"name":"[SEED] blessed brick","dmg":[2,5]},"interaction":{"bind":"open","bargain":"hard"},"want":"secrets","recruitable":true,"register":{"weirdness":0.6},"portrait":{"shape":"round","shades":[2,5],"marks":2},"behavior":"caster","defense":"dodge","talkInCombat":true},{"id":"surveyor-of-fnords","name":"[SEED] Surveyor of Fnords","habitat":["city","dungeon"],"rarity":"uncommon","hp":8,"weapon":{"name":"[SEED] surveyor's tripod","dmg":[2,6]},"interaction":{"overawe":"open","bind":"hard"},"want":"attention","recruitable":true,"register":{"weirdness":0.65},"portrait":{"shape":"tall","shades":[1,6],"marks":1},"behavior":"caster","defense":"avoid"},{"id":"brass-automaton","name":"[SEED] Brass Automaton","habitat":["dungeon"],"rarity":"uncommon","hp":12,"weapon":{"name":"[SEED] piston fist","dmg":[3,7]},"interaction":{"bind":"open"},"want":"blood","recruitable":true,"register":{"weirdness":0.6},"portrait":{"shape":"blocky","shades":[3,6],"marks":4},"behavior":"aggressive","defense":"absorb"},{"id":"five-eyed-auditor","name":"[SEED] Five-Eyed Auditor","habitat":["dungeon"],"rarity":"rare","hp":14,"weapon":{"name":"[SEED] red pen of erasure","dmg":[4,8]},"interaction":{"overawe":"hard","bind":"hard"},"want":"secrets","recruitable":true,"register":{"weirdness":0.8},"portrait":{"shape":"tall","shades":[0,6],"marks":5},"behavior":"caster","defense":"absorb"},{"id":"yellow-sign-bearer","name":"[SEED] Bearer of the Yellow Sign","habitat":["city","dungeon"],"rarity":"rare","hp":11,"weapon":{"name":"[SEED] tattered banner","dmg":[3,9]},"interaction":{"bargain":"hard"},"want":"attention","recruitable":true,"register":{"weirdness":0.85},"portrait":{"shape":"round","shades":[2,6],"marks":3},"behavior":"caster","defense":"avoid"},{"id":"pine-warden","name":"[SEED] Warden of the Pine Barrens","habitat":["overworld"],"rarity":"uncommon","hp":10,"weapon":{"name":"[SEED] antler crook","dmg":[3,6]},"interaction":{"bind":"open","overawe":"hard"},"want":"secrets","recruitable":true,"register":{"weirdness":0.5},"portrait":{"shape":"tall","shades":[1,5],"marks":3},"behavior":"steady","defense":"absorb"},{"id":"salt-preacher","name":"[SEED] Preacher of the Flats","habitat":["overworld"],"rarity":"uncommon","hp":8,"weapon":{"name":"[SEED] sun-cracked staff","dmg":[2,5]},"interaction":{"bargain":"open","impress":"hard"},"want":"attention","recruitable":true,"register":{"weirdness":0.3},"portrait":{"shape":"tall","shades":[4,6],"marks":1},"behavior":"caster","defense":"avoid","talkInCombat":true},{"id":"fen-lantern","name":"[SEED] The Fen Lantern","habitat":["overworld"],"rarity":"rare","hp":6,"weapon":{"name":"[SEED] drowning light","dmg":[3,7]},"interaction":{"bind":"open"},"want":"blood","recruitable":true,"register":{"weirdness":0.75},"portrait":{"shape":"round","shades":[0,6],"marks":4},"behavior":"caster","defense":"dodge"},{"id":"verge-antibody","name":"[SEED] Antibody of the Verge","habitat":["overworld","dungeon"],"rarity":"tail","hp":26,"weapon":{"name":"[SEED] corrective geometry","dmg":[7,13]},"interaction":{},"sacred":true,"want":"nothing you have","recruitable":false,"register":{"weirdness":1},"portrait":{"shape":"blocky","shades":[0,6],"marks":6},"behavior":"aggressive","defense":"absorb"},{"id":"thing-in-the-23rd-corridor","name":"[SEED] The Thing in the 23rd Corridor","habitat":["dungeon"],"rarity":"tail","hp":40,"weapon":{"name":"[SEED] wrongness","dmg":[12,20]},"interaction":{},"sacred":true,"want":"nothing you have","recruitable":false,"register":{"weirdness":1},"portrait":{"shape":"blocky","shades":[0,6],"marks":6},"behavior":"aggressive","defense":"absorb"},{"id":"chapel-warden","name":"[SEED] Warden of the Chapel","habitat":["dungeon"],"rarity":"tail","hp":30,"weapon":{"name":"[SEED] key that is also a knife","dmg":[8,14]},"interaction":{},"sacred":true,"want":"nothing you have","recruitable":false,"register":{"weirdness":0.95},"portrait":{"shape":"tall","shades":[0,5],"marks":4},"behavior":"steady","defense":"absorb"}]};
 __DATA["data/encounters/tables.json"] = {"_note":"[SEED] ENCOUNTERS LOCK (DIRECTIONS 2026-08-02): Fallout-style, RARE + GENUINELY UNFAIR. Mostly-mundane tables with FAT TAILS — a few % chance of the absurd (a cache that breaks the game open, a monster that kills you at level 2). NO level-scaling, NO pity gates: these weights are fixed constants and the roller reads no party level and no miss-counter, so scaling is impossible by construction. `triggerChance` is per crawl step (rare). Entry `kind`: none (nothing happens) | fight | cache (a good tail — payoff placed, not guaranteed). `unfair:true` flags a tail that can simply end the run. `count` is an inclusive [min,max] band.","artifacts":{"_note":"[SEED] named uniques, tail-placed. Descriptions await Ray's voice pass.","the-original-snub":"[SEED] The Original Snub — a coin stamped on both sides with the back of a head.","hagbards-compass":"[SEED] Hagbard's Compass — points at whatever you are avoiding.","fnord-lens":"[SEED] The Fnord Lens — through it, the word appears everywhere it was always printed."},"tables":{"dungeon":{"triggerChance":0.08,"entries":[{"weight":62,"kind":"none"},{"weight":18,"kind":"fight","foes":[{"being":"cave-rat","count":[1,3]}]},{"weight":8,"kind":"fight","foes":[{"being":"gutter-clerk","count":[1,1]}]},{"weight":5,"kind":"fight","foes":[{"being":"hollow-pilgrim","count":[1,2]}]},{"weight":3,"kind":"fight","foes":[{"being":"brass-automaton","count":[1,1]}]},{"weight":2,"kind":"fight","foes":[{"being":"five-eyed-auditor","count":[1,1]}]},{"weight":1,"kind":"cache","artifact":"the-original-snub"},{"weight":1,"kind":"fight","foes":[{"being":"thing-in-the-23rd-corridor","count":[1,1]}],"unfair":true}]},"overworld":{"triggerChance":0.05,"entries":[{"weight":70,"kind":"none"},{"weight":14,"kind":"fight","foes":[{"being":"carrion-crow","count":[1,2]}]},{"weight":8,"kind":"fight","foes":[{"being":"hollow-pilgrim","count":[1,1]}]},{"weight":4,"kind":"fight","foes":[{"being":"law-of-fives-hound","count":[1,2]}]},{"weight":2,"kind":"fight","foes":[{"being":"discordian-monk","count":[1,1]}]},{"weight":1,"kind":"cache","artifact":"hagbards-compass"},{"weight":1,"kind":"fight","foes":[{"being":"law-of-fives-hound","count":[3,5]}],"unfair":true}]},"biome_pine_barrens":{"triggerChance":0.06,"entries":[{"weight":60,"kind":"none"},{"weight":16,"kind":"fight","foes":[{"being":"law-of-fives-hound","count":[1,2]}]},{"weight":8,"kind":"fight","foes":[{"being":"hollow-pilgrim","count":[1,2]}]},{"weight":7,"kind":"fight","foes":[{"being":"pine-warden","count":[1,1]}]},{"weight":4,"kind":"fight","foes":[{"being":"discordian-monk","count":[1,1]}]},{"weight":2,"kind":"cache","artifact":"hagbards-compass"},{"weight":3,"kind":"fight","foes":[{"being":"law-of-fives-hound","count":[3,4]}],"unfair":true}]},"biome_salt_flats":{"triggerChance":0.05,"entries":[{"weight":66,"kind":"none"},{"weight":14,"kind":"fight","foes":[{"being":"carrion-crow","count":[1,3]}]},{"weight":8,"kind":"fight","foes":[{"being":"salt-preacher","count":[1,1]}]},{"weight":6,"kind":"fight","foes":[{"being":"hollow-pilgrim","count":[1,1]}]},{"weight":2,"kind":"cache","artifact":"the-original-snub"},{"weight":2,"kind":"fight","foes":[{"being":"five-eyed-auditor","count":[1,1]}],"unfair":true}]},"biome_drowned_fen":{"triggerChance":0.07,"entries":[{"weight":62,"kind":"none"},{"weight":14,"kind":"fight","foes":[{"being":"carrion-crow","count":[1,2]}]},{"weight":10,"kind":"fight","foes":[{"being":"fen-lantern","count":[1,1]}]},{"weight":8,"kind":"fight","foes":[{"being":"discordian-monk","count":[1,1]}]},{"weight":2,"kind":"cache","artifact":"hagbards-compass"},{"weight":4,"kind":"fight","foes":[{"being":"fen-lantern","count":[2,3]}],"unfair":true}]},"biome_perilous_verge":{"triggerChance":0.16,"entries":[{"weight":42,"kind":"none"},{"weight":16,"kind":"fight","foes":[{"being":"hollow-pilgrim","count":[1,2]}]},{"weight":12,"kind":"fight","foes":[{"being":"surveyor-of-fnords","count":[1,1]}]},{"weight":8,"kind":"fight","foes":[{"being":"discordian-monk","count":[1,1]}]},{"weight":8,"kind":"cache","artifact":"fnord-lens"},{"weight":10,"kind":"fight","foes":[{"being":"verge-antibody","count":[1,1]}],"unfair":true},{"weight":4,"kind":"fight","foes":[{"being":"thing-in-the-23rd-corridor","count":[1,1]}],"unfair":true}]},"chapel":{"triggerChance":0.5,"entries":[{"weight":40,"kind":"none"},{"weight":20,"kind":"fight","foes":[{"being":"five-eyed-auditor","count":[1,2]}]},{"weight":15,"kind":"fight","foes":[{"being":"yellow-sign-bearer","count":[1,1]}]},{"weight":10,"kind":"cache","artifact":"fnord-lens"},{"weight":10,"kind":"fight","foes":[{"being":"chapel-warden","count":[1,1]}],"unfair":true},{"weight":5,"kind":"fight","foes":[{"being":"thing-in-the-23rd-corridor","count":[1,1]}],"unfair":true}]}}};
 __DATA["data/register/chargen.json"] = {"_note":"[SEED] Character generation content (CHARACTER-DESIGN-2026-08-02: deal a person, not a spreadsheet). Omens are the quirk a roll deals; oddments are the one starting item that IS your weapon (power from items, never stats). Names/omens [SEED] until Ray's voice pass; oddment dmg bands are mechanical. Rerolls are unlimited — each is a whole stranger, and there is no 'good' roll: stats are a conversation style, not a power level.","omens":["[SEED] born under a crossed-out star","[SEED] remembers a city that was never built","[SEED] counts doorways, always arrives at five","[SEED] the mirror is half a second late","[SEED] owes a debt to someone not yet met","[SEED] hums a hymn no church will claim","[SEED] the number 23 follows, politely","[SEED] dreams in triplicate carbon copy","[SEED] was declared missing before setting out","[SEED] carries the smell of a room long closed"],"oddments":[{"name":"[SEED] a dull ceremonial knife","weapon":{"name":"[SEED] dull knife","dmg":[2,4]}},{"name":"[SEED] a length of surveyor's chain","weapon":{"name":"[SEED] iron chain","dmg":[2,5]}},{"name":"[SEED] a heavy brass paperweight","weapon":{"name":"[SEED] brass weight","dmg":[3,5]}},{"name":"[SEED] a walking cane with a hidden heft","weapon":{"name":"[SEED] loaded cane","dmg":[2,6]}},{"name":"[SEED] a rusted service revolver, one round","weapon":{"name":"[SEED] one-shot revolver","dmg":[1,9]}},{"name":"[SEED] a fistful of blessed gravel","weapon":{"name":"[SEED] thrown gravel","dmg":[1,4]}},{"name":"[SEED] a fire-axe from a door marked EXIT","weapon":{"name":"[SEED] fire-axe","dmg":[3,7]}},{"name":"[SEED] nothing but your own two hands","weapon":{"name":"[SEED] bare hands","dmg":[1,3]}}]};
-__DATA["data/register/loot.json"] = {"_note":"[SEED] M10 Part B — loot. Kills mostly drop nothing (mundane, per the ENCOUNTERS-LOCK spirit: no scaling, no pity — a fixed seeded chance reading only (foe, seed)); occasionally a salvaged weapon or a small trinket. Caches yield the named artifact relics from encounters/tables.json. All strings [SEED] until Ray's voice pass; stripped from every player surface at draw.","trinkets":["[SEED] a brass token stamped with a closed eye","[SEED] a folded map of a city that isn't there","[SEED] a finger-bone worn smooth by counting","[SEED] a key that fits no lock you've met","[SEED] a coin that always lands on its edge","[SEED] a page torn from a book you were about to write","[SEED] a whistle that makes only silence","[SEED] a pocket watch stopped at 5:00"],"found_cache":"[SEED] you turn out the cache","found_kill":"[SEED] you salvage what it leaves","_traversal_note":"[SEED] M12 E3 — traversal WORK-ITEMS seeded into the loot of biomes ADJACENT to a gate, so the loop reads loot → open the gate → richer biome. Tags match the gate's requiresTag; these are consumable world-work items, never equipment.","traversal":{"salt-flats":{"tag":"ford","name":"[SEED] a bundle of ford stones","chance":0.3},"pine-barrens":{"tag":"ford","name":"[SEED] a raft of lashed pine","chance":0.22}}};
+__DATA["data/register/loot.json"] = {"_note":"[SEED] M10 Part B — loot. Kills mostly drop nothing (mundane, per the ENCOUNTERS-LOCK spirit: no scaling, no pity — a fixed seeded chance reading only (foe, seed)); occasionally a salvaged weapon or a small trinket. Caches yield the named artifact relics from encounters/tables.json. All strings [SEED] until Ray's voice pass; stripped from every player surface at draw.","consumables":[{"name":"[SEED] a field dressing","effect":{"kind":"heal","power":[2,4]},"charges":1,"tags":["consumable"]},{"name":"[SEED] a grey swallow","effect":{"kind":"heal","power":[3,5]},"charges":1,"tags":["consumable"]}],"trinkets":["[SEED] a brass token stamped with a closed eye","[SEED] a folded map of a city that isn't there","[SEED] a finger-bone worn smooth by counting","[SEED] a key that fits no lock you've met","[SEED] a coin that always lands on its edge","[SEED] a page torn from a book you were about to write","[SEED] a whistle that makes only silence","[SEED] a pocket watch stopped at 5:00"],"found_cache":"[SEED] you turn out the cache","found_kill":"[SEED] you salvage what it leaves","_traversal_note":"[SEED] M12 E3 — traversal WORK-ITEMS seeded into the loot of biomes ADJACENT to a gate, so the loop reads loot → open the gate → richer biome. Tags match the gate's requiresTag; these are consumable world-work items, never equipment.","traversal":{"salt-flats":{"tag":"ford","name":"[SEED] a bundle of ford stones","chance":0.3},"pine-barrens":{"tag":"ford","name":"[SEED] a raft of lashed pine","chance":0.22}}};
 __DATA["data/register/combat.json"] = {"_note":"[SEED] M11 combat register — the in-voice combat SURFACE (directive §4: all verbs + outcomes render through the register engine's prose, no menu-speak). labels: the short verb names on the choice line (not 'fight/talk/flee'). beats: the voiced line after an action resolves. outcomes: the banner when a fight ends or a verb is refused. subterfuge: the environment-keyed edge the SUBTERFUGE verb reads per-biome. All strings [SEED] until Ray's voice pass; stripped from every player surface at draw.","labels":{"attack":"[SEED] Strike","defend":"[SEED] Guard","item":"[SEED] Reach","subterfuge":"[SEED] Gambit","talk":"[SEED] Parley","flee":"[SEED] Break away"},"beats":{"attack":["[SEED] you commit — no taking it back","[SEED] you close and cut"],"defend":["[SEED] you set your feet and wait for it","[SEED] you give no opening"],"item":["[SEED] you reach into the pack","[SEED] you trust the found thing"],"subterfuge":["[SEED] you work the ground for a lie","[SEED] you bend the moment"],"talk":["[SEED] you try the words instead","[SEED] you spend breath, not blood"],"flee":["[SEED] you look for a lane out"]},"outcomes":{"win":["[SEED] the pattern breaks and does not re-form","[SEED] the shape comes apart in your hands"],"lose":["[SEED] the thread is cut","[SEED] the world closes over the space you held"],"fled":["[SEED] you break contact and run","[SEED] the dark takes you before it can"],"flee_fail":["[SEED] there is no lane out — not yet","[SEED] the way closes; you turn back to it"],"parley":["[SEED] words hold where blows would not","[SEED] it stands down, uneasy"],"recruit":["[SEED] it falls in beside you","[SEED] it throws in with your thread"],"talk_hardened":["[SEED] it is past listening now","[SEED] the time for words closed with the first blow"],"verb_unavailable":["[SEED] that tack finds no purchase in it","[SEED] it hears the word and is unmoved"],"subterfuge_spent":["[SEED] that trick is used up","[SEED] the ground gives you nothing more"],"item_fumble":["[SEED] the rite slips its gnosis and scatters","[SEED] you reach past your reach; nothing answers"]},"_targeting_note":"[SEED] M12 H3 — the follower-targeting weight table. Ships EXACTLY uniform {pc:1, follower:1} so combat is unchanged; a later operator pass can raise follower to make allies drawn fire, or pc to make the stranger the mark. A tunable design lever, not an array-order accident.","targeting":{"pc":1,"follower":1},"_kills_note":"[SEED] C1 kill beat — one line per KILL CLASS (banded by the felled thing's weirdness / sacredness). Held a beat as a framed panel over the scene.","kills":{"mundane":["[SEED] it drops, and is only meat","[SEED] the body folds; nothing was watching after all"],"strange":["[SEED] it comes apart wrong, and is still","[SEED] whatever held it lets go all at once"],"uncanny":["[SEED] the shape unspools and will not re-knot","[SEED] it ends, and the air is glad of the space"],"sacred":["[SEED] you have unmade something that should not have been struck","[SEED] the silence after is not empty"]},"_joins_note":"[SEED] C2 join beat — the being's own turning, by class, held a beat. Ray's voice pass can give each being its own line.","joins":{"mundane":["[SEED] it takes your side as if it always had","[SEED] it falls in, glad of the company"],"strange":["[SEED] it turns, and something in it settles toward you","[SEED] it decides you are the safer pattern"],"uncanny":["[SEED] it consents, for reasons that are not yours","[SEED] it throws in — you will wonder later why"],"sacred":["[SEED] it inclines toward you, which should be impossible","[SEED] it walks with you now; do not ask what it wants"]},"subterfuge":{"default":{"chance":0.5,"kind":"distract","labels":["[SEED] kicks up grit and shadow","[SEED] fakes a stumble to pull the eye wide"]},"biomes":{"drowned-fen":{"chance":0.62,"kind":"distract","labels":["[SEED] slaps the black water into a curtain of mist","[SEED] lets the reeds close like a drawn breath"]},"salt-flats":{"chance":0.38,"kind":"expose","labels":["[SEED] there is nowhere to hide on the pan — the feint goes wide and true","[SEED] throws salt-glare across its eyes"]},"pine-barrens":{"chance":0.55,"kind":"distract","labels":["[SEED] snaps a resin branch to crack like a shot","[SEED] melts a step back into the black conifers"]},"perilous-verge":{"chance":0.5,"kind":"expose","labels":["[SEED] lets the wrong-angle geometry do the lying","[SEED] steps through a corner that should not be there"]}}}};
 __DATA["data/register/city.json"] = {"_note":"[SEED] City-mode strings (M3 CITY / M8 town variety). Cities are the SOCIAL dungeon (CONTENT-IDENTITY): the identity layer is lodges/cells/front organizations. M8 adds per-town archetypes, more service verbs, per-building proprietors, and citizens so two towns and two buildings never read the same. All [SEED] until Ray's voice pass.","prompt_enter_building":"[SEED] A door stands open. Step inside?","prompt_leave_city":"[SEED] The gate is behind you; the map resumes, probably.","services":{"shop":{"name":"[SEED] Sundries & Contraband","greeting":"[SEED] The stall opens for the right knock. Everything is for sale; some of it is yours already."},"inn":{"name":"[SEED] The Bent Nail","greeting":"[SEED] Rooms by the hour. Dreams are extra and not guaranteed to be your own."},"rumor":{"name":"[SEED] The Listening Post","greeting":"[SEED] Someone here sells what everyone already knows, at a markup for the telling."},"lodge":{"name":"[SEED] A Door With No Sign","greeting":"[SEED] You were expected. Give the word, or give a reason you don't have it."},"shrine":{"name":"[SEED] The Half-Lit Chapel-of-Ease","greeting":"[SEED] A shrine to a saint whose name keeps changing. Kneel, if your certainties will let you."},"bureau":{"name":"[SEED] The Sub-Office of Minor Permanences","greeting":"[SEED] Take a number. The number takes one back. A clerk will see your file, eventually, forever."}},"service_effects":{"shrine_blessed":"[SEED] the changing saint marks you; the party is mended and something watches back","shrine_refused":"[SEED] you kneel and feel nothing kneel with you — no gnosis, no blessing","bureau_filed":"[SEED] your existence is stamped, cross-referenced, and filed under a name almost your own","bureau_pending":"[SEED] your file is already open; the stamp has been applied and cannot be un-applied"},"archetypes":{"port":"[SEED] a salt-rotted port town; the tide leaves messages nobody admits to reading","bureau":"[SEED] a bureaucratic seat where the paperwork outnumbers the people and outranks them","pilgrimage":"[SEED] a pilgrimage stop; every third door is a shrine to a slightly different god","market":"[SEED] a market town that will sell you anything, including things you brought","garrison":"[SEED] a garrison town; the walls face inward and no one will say why"},"citizen_greetings":["[SEED] gives you directions to a street that was demolished, warmly.","[SEED] recognizes you from a future you have not had yet.","[SEED] is counting the windows and asks you not to interrupt.","[SEED] offers to sell you your own name back at a fair price.","[SEED] warns you about the man in the grey coat, who is also them.","[SEED] says the gate moved again and points three different ways."]};
+__DATA["data/register/social.json"] = {"_note":"[SEED] M12 playtest2 — visible NPC dialogue pools. Every interaction type has its own seeded register pool; the social engine picks from these instead of hard-coded stubs. Placeholders like ${name} are filled at runtime; the leading [SEED] is stripped before display.","greeting":["[SEED] ${name} stops, as if the conversation had already started.","[SEED] ${name} looks at you with the resigned patience of a clerk.","[SEED] ${name} smiles before you have said anything — a bad sign.","[SEED] ${name} gestures for you to keep your voice down.","[SEED] ${name} says your name, which you did not offer."],"talk":["[SEED] ${name} tells you something that will be true tomorrow.","[SEED] ${name} asks a question and then answers it, incorrectly.","[SEED] ${name} speaks in a register you almost remember from school.","[SEED] ${name} gives you directions to a street that moved.","[SEED] ${name} mentions a number. You wish it had been a different one."],"recruit_attempt":["[SEED] you ask ${name} to throw in with you.","[SEED] you offer ${name} a place in the pattern.","[SEED] you tell ${name} the road is wider with company.","[SEED] you ask ${name} what they are doing later, forever.","[SEED] you offer ${name} the only thing you have in abundance: forward motion."],"join":["[SEED] ${name} nods, and the party grows by one.","[SEED] ${name} falls in beside you without a word.","[SEED] ${name} says yes in a language that has no no.","[SEED] ${name} joins you, still holding the secret they were about to tell.","[SEED] ${name} takes their place in the column."],"refuse":["[SEED] ${name} has nothing for you and less to say.","[SEED] ${name} declines, politely and finally.","[SEED] ${name} shakes their head and returns to their counting.","[SEED] ${name} says the timing is wrong, and you believe them.","[SEED] ${name} turns away before the question finishes."],"farewell":["[SEED] ${name} leaves before you can ask their real name.","[SEED] ${name} walks on, already forgetting the exchange.","[SEED] ${name} tips a hat that isn't there and is gone.","[SEED] ${name} mutters a number under their breath and keeps walking.","[SEED] ${name} presses a leaflet into your hand. It is blank on both sides."]};
 __DATA["data/palettes.json"] = {"_note":"[SEED] M4 VIBE palette schemes. The look is ONE hue at a time (DESIGN-SEED): each scheme is a single base hue the 0..6 shade ramp is remapped onto, dark→light by brightness only. Monochrome by construction — every shade of a scheme shares the scheme's channel ratio. M6 review addendum item 3 (Ray, Cyclopean-2 move): each scheme gains ONE restrained accent hue used sparingly (HUD accents, the party marker, special entities, register moments) — the base ramp stays strictly single-hue; the accent is the only second colour. Names [SEED] until Ray's voice pass.","default":"phosphor-green","schemes":[{"id":"phosphor-green","name":"[SEED] Phosphor Green","rgb":[96,255,128],"accent":[255,176,64]},{"id":"amber","name":"[SEED] Amber","rgb":[255,176,64],"accent":[96,208,232]},{"id":"paper-white","name":"[SEED] Paper White","rgb":[232,232,232],"accent":[230,96,96]},{"id":"ice-blue","name":"[SEED] Ice","rgb":[120,190,255],"accent":[255,190,96]},{"id":"blood","name":"[SEED] Blood","rgb":[255,72,72],"accent":[240,210,120]}]};
 __M["src/engine/prng.js"] = (function () {
 
@@ -4126,6 +4127,7 @@ __M["src/engine/session.js"] = (function () {
 const { createRoster, createCharacter } = __M["src/engine/character.js"];
 const { createCombat } = __M["src/engine/combat.js"];
 const { normalizeItem } = __M["src/engine/items.js"];
+const { mulberry32 } = __M["src/engine/prng.js"];
 // The run session — permadeath with a persistent world
 // (CHARACTER-DESIGN-2026-08-02: "The PC dies for good ... roll a new stranger
 // into the SAME seeded world; map, cleared sites, and world history remain").
@@ -4275,35 +4277,52 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     return capacityFloor;
   }
 
-  // Rest economics (M12 A3 / locked split). Context decides heal + cost; every path
-  // reports before→after HP so the shell can voice it (Part A: "always reports").
-  //   'camp' (overworld R) — PARTIAL heal (half the missing HP); the CALLER rolls the
-  //       ambush tail afterward (the risk half of the split, wired in the shell).
-  //   'inn' | 'shrine' — FULL heal; FREE while the world holds no cleared dungeon (the
-  //       forgiving opening), then it costs one carried item tagged `rest-offering`
-  //       (barter economy, F2). No offering and not free → refused, no heal.
-  //   mid-dungeon healing is NOT this — it's consumables only (consumeItem), by design.
+  // Rest economics (M12 A3 / playtest2 rest gating). Rest is only permitted at safe
+  // locations — inns and shrines inside towns. The open field refuses; recovery there
+  // is consumable-only. Every safe path reports before→after HP so the shell can
+  // voice it (Part A: "always reports").
+  //   'inn' | 'shrine' — FULL heal; FREE while the world holds no cleared dungeon, then
+  //       it costs one carried item tagged `rest-offering`. No offering and not free →
+  //       refused, no heal.
+  //   any other context (e.g. 'camp') — refused with reason 'not-safe'.
   // Returns { ok, context, before, after, healed, free?, offering?, reason? }.
-  const CAMP_HEAL_FRACTION = 0.5;
   function rest(context = 'camp') {
     const before = pc.hp;
-    if (context === 'inn' || context === 'shrine') {
-      const free = cleared.size === 0;
-      let offering = null;
-      if (!free) {
-        offering = inventory.find((it) => Array.isArray(it.tags) && it.tags.includes('rest-offering')) || null;
-        if (!offering) return { ok: false, context, before, after: pc.hp, healed: 0, free, reason: 'no-offering' };
-        dropItem(offering.uid);
-      }
-      pc.hp = pc.maxHp;
-      roster.healAll();
-      return { ok: true, context, before, after: pc.hp, healed: pc.hp - before, free, offering: offering ? offering.name : null };
+    if (context !== 'inn' && context !== 'shrine') {
+      return { ok: false, context, before, after: pc.hp, healed: 0, free: false, reason: 'not-safe' };
     }
-    // camp / overworld: a partial recovery — enough to keep going, never a free full.
-    const heal = Math.max(1, Math.ceil((pc.maxHp - pc.hp) * CAMP_HEAL_FRACTION));
-    pc.hp = Math.min(pc.maxHp, pc.hp + heal);
-    roster.healFraction(CAMP_HEAL_FRACTION);
-    return { ok: true, context: 'camp', before, after: pc.hp, healed: pc.hp - before, free: true };
+    const free = cleared.size === 0;
+    let offering = null;
+    if (!free) {
+      offering = inventory.find((it) => Array.isArray(it.tags) && it.tags.includes('rest-offering')) || null;
+      if (!offering) return { ok: false, context, before, after: pc.hp, healed: 0, free, reason: 'no-offering' };
+      dropItem(offering.uid);
+    }
+    pc.hp = pc.maxHp;
+    roster.healAll();
+    return { ok: true, context, before, after: pc.hp, healed: pc.hp - before, free, offering: offering ? offering.name : null };
+  }
+
+  // Out-of-combat consumable use (playtest2 field recovery). Only healing effects are
+  // usable in the field; other effects resolve inside combat. A finite-charge item is
+  // consumed exactly as in combat. Respects the item's own heal band as the dial.
+  function useItem(uid, seed = 1) {
+    const raw = inventory.find((x) => x.uid === uid);
+    if (!raw) return { ok: false, reason: 'missing' };
+    const it = normalizeItem(raw);
+    if (!it || !it.effect || it.effect.kind !== 'heal' || it.charges === 0) {
+      return { ok: false, reason: 'not-usable' };
+    }
+    const rng = mulberry32(((seed >>> 0) || 1) ^ ((uid >>> 0) * 0x9e3779b1 >>> 0));
+    const p = it.effect.power;
+    const band = Array.isArray(p) ? p : [p, p];
+    const amt = Math.max(1, band[0] + Math.floor(rng() * (band[1] - band[0] + 1)));
+    const before = pc.hp;
+    pc.hp = Math.min(pc.maxHp, pc.hp + amt);
+    const after = pc.hp;
+    const healed = after - before;
+    consumeItem(uid);
+    return { ok: true, kind: 'heal', before, after, healed, name: it.name };
   }
 
   // Death: permadeath. The world persists; a new stranger is dealt in. Before the
@@ -4460,6 +4479,7 @@ function createSession({ chargen, seed = 0, capacity = 2 } = {}) {
     addItem,
     dropItem,
     consumeItem,
+    useItem,
     equip,
     equipped,
     reroll,
@@ -4488,8 +4508,9 @@ const { normalizeItem } = __M["src/engine/items.js"];
 // level or a miss-counter, so there is no scaling and no pity); occasionally it
 // leaves a salvaged weapon or a small trinket. Caches yield their named artifact as
 // a relic. Pure + deterministic; items carry no uid (the session assigns one).
-const KILL_DROP_CHANCE = 0.30; // most kills are mundane
-const SALVAGE_SHARE = 0.6;     // of drops, weapon salvage vs trinket
+const KILL_DROP_CHANCE = 0.30;    // most kills are mundane
+const SALVAGE_SHARE = 0.6;        // of weapon-bearing drops, salvage vs consumable/trinket
+const CONSUMABLE_SHARE = 0.25;    // of non-salvage drops, a consumable rather than a trinket
 
 function createLoot(data = {}) {
   const trinkets = (data && data.trinkets) || [];
@@ -4517,6 +4538,11 @@ function createLoot(data = {}) {
         name: `[SEED] salvaged ${cleanName(foe.weapon.name || 'weapon')}`,
         weapon: { name: foe.weapon.name || '[SEED] salvage', dmg: foe.weapon.dmg.slice() },
       });
+    }
+    const cons = (data.consumables || []);
+    if (cons.length && rng() < CONSUMABLE_SHARE) {
+      const spec = cons[Math.floor(rng() * cons.length)];
+      return normalizeItem({ ...spec, kind: 'consumable' });
     }
     const t = trinkets.length ? trinkets[Math.floor(rng() * trinkets.length)] : '[SEED] a curious oddment';
     return normalizeItem({ kind: 'trinket', name: t });
@@ -4610,11 +4636,11 @@ const { mulberry32 } = __M["src/engine/prng.js"];
 const { rankIndex } = __M["src/engine/character.js"];
 const { normalizeItem } = __M["src/engine/items.js"];
 // M12 F1/F2 — the minimal social layer (un-banked). A real talk ACTION against a
-// single adjacent being resolves from a FIXED outcome table (ADDENDUM #5): lore / rumor
-// (points at a real site or gate) / barter / joinable-if-capacity / rebuff — each with
-// its own register prose, logged by the shell. Barter is ONE exchange: the being wants
-// one item by TAG and offers one generated item from a tiered pool; PULL rank widens
-// only the OFFER-POOL tier (never counts, never prices — the never-scale-numbers lock).
+// single adjacent being resolves from a FIXED outcome table (ADDENDUM #5): lore /
+// rumor / barter / joinable-if-capacity / rebuff — each with its own register prose,
+// logged by the shell. Barter is ONE exchange: the being wants one item by TAG and
+// offers one generated item from a tiered pool; PULL rank widens only the OFFER-POOL
+// tier (never counts, never prices — the never-scale-numbers lock).
 //
 // Pure + deterministic in (subject, seed). No currency anywhere.
 // Canonical trade tags: the beings' existing `want` vocabulary + the rest-offering tag
@@ -4651,44 +4677,94 @@ function offerTiersOpen(pc) {
   return 1;
 }
 
-function createSocial({ prose = null } = {}) {
+// Fallback register pools so the engine stays usable headlessly even when no
+// register file is passed. Every fallback line keeps the leading [SEED] marker.
+const FALLBACK = {
+  greeting: ['[SEED] ${name} nods as if you had an appointment.'],
+  talk: ['[SEED] ${name} tells you a thing you half-believe.'],
+  recruit_attempt: ['[SEED] you ask ${name} to throw in with you.'],
+  join: ['[SEED] ${name} joins you.'],
+  refuse: ['[SEED] ${name} has nothing for you and less to say.'],
+  farewell: ['[SEED] ${name} walks on.'],
+};
+
+function createSocial({ prose = null, register = null } = {}) {
+  function pool(name) {
+    const p = register && register[name];
+    return (Array.isArray(p) && p.length) ? p : (FALLBACK[name] || ['[SEED] ...']);
+  }
+  function pick(poolName, seed) {
+    const lines = pool(poolName);
+    const rng = mulberry32(((seed >>> 0) || 1) ^ 0x50c1a1);
+    return lines[Math.floor(rng() * lines.length)];
+  }
+  function format(line, ctx = {}) {
+    return String(line)
+      .replace(/\$\{name\}/g, strip(ctx.name || ctx.who || 'a stranger'))
+      .replace(/\$\{target\}/g, strip(ctx.target || 'somewhere'));
+  }
+  function lineFor(poolName, subject, seed) {
+    return format(pick(poolName, seed), { name: subject && subject.name });
+  }
+
+  function greeting(subject, seed) { return lineFor('greeting', subject, seed); }
+  function farewell(subject, seed) { return lineFor('farewell', subject, seed); }
+  function joinLine(subject, seed) { return lineFor('join', subject, seed); }
+  function refuseLine(subject, seed) { return lineFor('refuse', subject, seed); }
+
   // Resolve a talk against `subject` (a being record or a plain NPC {name}). Options:
   //   seed          deterministic pick
   //   capacityOpen  the roster has room (gates the 'joinable' class)
   //   pointers      real targets a rumor can point at (site/gate {name})
-  // Returns { class, line, want?, offer?, target? } — the shell voices `line`, logs the
-  // class, and (for barter) opens the one-exchange overlay with want/offer.
+  // Returns { class, line, want?, offer?, target?, greeting?, farewell? } — the shell
+  // voices `line`, logs the class, and (for barter) opens the one-exchange overlay.
   function resolveTalk(subject, pc, { seed = 0, capacityOpen = false, pointers = [] } = {}) {
     const rng = mulberry32((seed >>> 0) || 1);
     const recruitable = !!(subject && subject.recruitable) && capacityOpen && !(subject && subject.sacred);
     const classes = ['lore', 'rumor', 'barter', 'rebuff'];
     if (recruitable) classes.push('joinable');
     const cls = classes[Math.floor(rng() * classes.length)];
-    const who = subject && subject.name ? subject.name : '[SEED] a stranger';
 
     if (cls === 'rumor') {
       const target = pointers.length ? pointers[Math.floor(rng() * pointers.length)] : null;
       const line = target
-        ? `[SEED] "${strip(who)} leans in: seek ${strip(target.name)}, ${target.dir || 'out that way'}."`
-        : '[SEED] a rumor with no place to land — the map here is thin';
-      return { class: 'rumor', line, target };
+        ? `[SEED] "${strip(subject && subject.name)} leans in: seek ${strip(target.name)}, ${target.dir || 'out that way'}."`
+        : lineFor('talk', { name: subject && subject.name }, seed);
+      return { class: 'rumor', line, target, greeting: greeting(subject, seed), farewell: farewell(subject, seed) };
     }
     if (cls === 'barter') {
       const want = pickWant(subject, rng);
       const offer = pickOffer(pc, rng);
-      return { class: 'barter', line: `[SEED] ${strip(who)} will trade — it wants ${want}`, want, offer };
+      return {
+        class: 'barter',
+        line: lineFor('talk', { name: subject && subject.name }, seed),
+        want,
+        offer,
+        greeting: greeting(subject, seed),
+        farewell: farewell(subject, seed),
+      };
     }
     if (cls === 'joinable') {
-      return { class: 'joinable', line: `[SEED] ${strip(who)} would throw in with you, if you ask` };
+      return {
+        class: 'joinable',
+        line: lineFor('recruit_attempt', { name: subject && subject.name }, seed),
+        greeting: greeting(subject, seed),
+        farewell: farewell(subject, seed),
+      };
     }
     if (cls === 'rebuff') {
-      return { class: 'rebuff', line: `[SEED] ${strip(who)} has nothing for you and less to say` };
+      return {
+        class: 'rebuff',
+        line: lineFor('refuse', { name: subject && subject.name }, seed),
+        greeting: greeting(subject, seed),
+        farewell: farewell(subject, seed),
+      };
     }
-    // lore — a flavor line (register when wired, else a stub)
+    // lore — a flavor line from the talk pool (register when wired, else fallback)
     const lore = prose && typeof prose.describeTerrain === 'function'
-      ? `[SEED] ${strip(who)}: ${strip(prose.describeTerrain('rumor', (seed & 0xffff), (seed >>> 16) & 0xffff, seed, { weirdness: 0.5 }))}`
-      : `[SEED] ${strip(who)} tells you a thing you half-believe`;
-    return { class: 'lore', line: lore };
+      ? `[SEED] ${strip(subject && subject.name)}: ${strip(prose.describeTerrain('rumor', (seed & 0xffff), (seed >>> 16) & 0xffff, seed, { weirdness: 0.5 }))}`
+      : lineFor('talk', { name: subject && subject.name }, seed);
+    return { class: 'lore', line: lore, greeting: greeting(subject, seed), farewell: farewell(subject, seed) };
   }
 
   // What a being wants in trade: its own `want` tag if it's a real trade tag, else a
@@ -4710,7 +4786,7 @@ function createSocial({ prose = null } = {}) {
     return normalizeItem(rec);
   }
 
-  return { resolveTalk, pickOffer };
+  return { resolveTalk, greeting, farewell, joinLine, refuseLine, pickOffer };
 }
 
 function strip(s) { return String(s).replace(/^\[SEED\]\s*/i, ''); }
@@ -8526,6 +8602,7 @@ const chargenData = __DATA["data/register/chargen.json"];
 const lootData = __DATA["data/register/loot.json"];
 const combatRegister = __DATA["data/register/combat.json"];
 const cityRegister = __DATA["data/register/city.json"];
+const socialRegister = __DATA["data/register/social.json"];
 const shopRegister = __DATA["data/register/shop.json"];
 const palettesData = __DATA["data/palettes.json"];
 // Browser entry point. Boots the overworld: streams chunks around the party,
@@ -8591,7 +8668,7 @@ function createGame(config) {
   const loot = createLoot(lootData); // Part B: kills drop salvage/trinkets; caches yield relics
   const shop = createShop(shopRegister); // M12: seeded-chaotic barter commerce
   const services = createServices(cityRegister, { prose, shop });
-  const social = createSocial({ prose }); // F1/F2 minimal talk + barter
+  const social = createSocial({ prose, register: socialRegister }); // F1/F2 minimal talk + barter
   // The run session: the current PC + roster, permadeath, and world persistence
   // (cleared sites survive a death). Seeded off the world so a world reproduces.
   const session = createSession({ chargen, seed: (world.seed ^ 0x5e5510) >>> 0 });
@@ -9533,7 +9610,7 @@ function boot() {
     }
     y += 14;
     ctx.fillStyle = shadeColor(4); ctx.font = '12px monospace';
-    ctx.fillText('[W]/[S] pick   [E] equip   [X] drop   [I]/[Esc] close', 28, y);
+    ctx.fillText('[W]/[S] pick   [E] equip   [U] use   [X] drop   [I]/[Esc] close', 28, y);
     ctx.restore();
   }
 
@@ -9668,8 +9745,8 @@ function boot() {
   }
   // F1/F2 — open a talk against an adjacent being; resolve the fixed outcome table and
   // act on it (barter opens the exchange overlay; joinable recruits; the rest voice a
-  // line). Logged (Part B). Beasts talk as their being (recruitable/want); NPCs as a
-  // name (never joinable, want seeded from the trade tags).
+  // register line). Logged (Part B). Beasts talk as their being (recruitable/want);
+  // NPCs as a name (never joinable, want seeded from the trade tags).
   function openSocialTalk() {
     const w = adjacentWanderer();
     if (!w) { owNote = '[SEED] no one answers'; render(); return; }
@@ -9677,11 +9754,20 @@ function boot() {
     const seed = hashInt(w.x | 0, w.y | 0, (world.seed ^ 0x50c1a1 ^ game.tick) >>> 0);
     const res = social.resolveTalk(subject, session.pc, { seed, capacityOpen: !session.roster.full, pointers: talkPointers() });
     logEvent('talk', { mode: 'overworld', outcome: res.class });
-    if (res.class === 'barter') { barterState = { subject, want: res.want, offer: res.offer, line: res.line }; render(); return; }
+    if (res.class === 'barter') {
+      barterState = { subject, want: res.want, offer: res.offer, line: res.line };
+      owNote = stripSeed(res.line);
+      render(); return;
+    }
     if (res.class === 'joinable') {
       const r = session.roster.recruit(subject);
-      if (r.ok) { setJoinBeat({ name: subject.name, being: subject }); wanderers.take(w.x, w.y); owNote = ''; }
-      else owNote = stripSeed(res.line);
+      if (r.ok) {
+        beatPanel = { title: `${stripSeed(subject.name)} joins you`, lines: [social.joinLine(subject, seed)] };
+        wanderers.take(w.x, w.y);
+        owNote = '';
+      } else {
+        owNote = stripSeed(social.refuseLine(subject, seed));
+      }
       render(); return;
     }
     owNote = stripSeed(res.line);
@@ -10483,6 +10569,21 @@ function boot() {
       if (a === 'cancel') { showInv = false; }
       else if (d === 'N') invSel = Math.max(0, invSel - 1);
       else if (d === 'S') invSel = Math.min(Math.max(0, items.length - 1), invSel + 1);
+      else if (e.key === 'u' || e.key === 'U') {
+        const it = items[invSel];
+        if (it) {
+          const ures = session.useItem(it.uid, game.tick);
+          if (ures.ok) {
+            const line = (register.consumable_heal || '[SEED] you use ${item}; the stranger mends ${before}→${after} hp')
+              .replace('${item}', stripSeed(ures.name))
+              .replace('${before}', ures.before)
+              .replace('${after}', ures.after);
+            toast = stripSeed(line);
+          } else {
+            toast = ures.reason === 'not-usable' ? 'not usable here' : 'nothing to use';
+          }
+        }
+      }
       else if (a === 'interact') { const it = items[invSel]; if (it && session.equip(it.uid)) toast = 'equipped'; }
       else if (e.key === 'x' || e.key === 'X') { const it = items[invSel]; if (it) { session.dropItem(it.uid); invSel = Math.max(0, invSel - 1); } }
       render(); return;
@@ -10779,22 +10880,21 @@ function boot() {
         return;
       }
       if (a === 'rest') {
-        // Overworld camp (A3 rest split): a PARTIAL recovery, never a free full heal —
-        // and making camp still costs a turn of exposure (the local tail rolls; a fight
-        // means the camp is ambushed). The heal reports before→after HP in-voice.
+        // Playtest2 rest gating: the open field refuses to rest. Recovery outside a
+        // safe location (inn/shrine) is consumable-only. Voice a seeded register refusal
+        // and do NOT advance the clock or roll the ambush tail.
         e.preventDefault();
         const rres = session.rest('camp');
-        game.bumpTick();
-        const ev = overworldStep();
-        if (ev.enc && ev.enc.kind === 'fight') {
-          const eseed = hashInt(party.x, party.y, (world.seed ^ 0x1e57) >>> 0);
-          owNote = '[SEED] you make camp — and are found';
-          beginCombat(ev.enc, eseed, 'overworld');
+        if (!rres.ok) {
+          const lines = register.rest_refused_wild || ['[SEED] the field offers no bed'];
+          const refSeed = hashInt(party.x, party.y, (world.seed ^ 0x70c5) >>> 0);
+          owNote = stripSeed(lines[refSeed % lines.length]);
+          logEvent('rest', { mode: 'overworld', outcome: 'refused in the wild' });
           render(); return;
         }
-        owNote = ev.enc && ev.enc.kind === 'cache' ? collectCache(ev.enc)
-          : `[SEED] you make camp; the party mends — ${rres.before}→${rres.after} hp`;
-        logEvent('rest', { mode: 'overworld', outcome: `camp ${rres.before}→${rres.after} hp` });
+        // Safe-location rests are handled by entering inn/shrine buildings; this path
+        // should never heal because 'camp' is always refused.
+        owNote = '[SEED] the field offers no bed';
         render(); return;
       }
       if (a === 'talk') { e.preventDefault(); openSocialTalk(); return; }
